@@ -1,0 +1,115 @@
+.btn-custom {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+.seller_BreAkar {
+  padding-top: 30px;
+}
+
+.line-chart-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  margin-left: -500px;
+}
+
+.table-responsive {
+  margin: 0 auto;
+}
+
+.h2 {
+  text-align: center;
+}
+
+.user-card {
+  min-height: 1vh;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+  width: 100%;
+  max-width: 200px;
+  height: 100px;
+  margin: 10px auto;
+  font-size: 0.75rem;
+}
+
+.row {
+  margin: 0;
+  padding: 0;
+}
+
+.user-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card img-top {
+  height: auto;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.card_por img_pr {
+  height: 30px;
+  width: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.card_por1 {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  width: 100%;
+  max-width: 200px;
+  height: 150px;
+  margin: 10px auto;
+  border: 2px solid blue;
+  margin-left: -220px;
+}
+
+.card_file {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  width: 100%;
+  max-width: 200px;
+  height: 150px;
+  margin: 10px auto;
+  border: 2px solid blue;
+  margin-right: -350px;
+  margin-top: -160px;
+}
+
+.card_cont {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  width: 100%;
+  max-width: 200px;
+  margin-right: -350px;
+  height: 150px;
+  margin-left: 100px;
+  border: 2px solid blue;
+  margin-top: -160px;
+}
+
+@media (max-width: 600px) {
+  .user-card {
+    width: 100%;
+    height: auto;
+  }
+
+  .card_por,
+  .card_file,
+  .card_cont {
+    width: 100%;
+    height: auto;
+  }
+}

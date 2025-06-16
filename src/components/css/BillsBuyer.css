@@ -1,0 +1,72 @@
+.card_char1{
+    border: 1px solid #f3ebeb; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    transition: transform 0.2s; 
+    width: 300px; 
+    height: 200px;
+}
+.row_Char1{
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: space-between; 
+    margin-right: '900px';
+}
+
+@media (max-width: 768px) {
+    .row_Char1 {
+        flex-direction: column;
+    }
+}
+.conatiner_Char1{
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between; 
+    margin-top: 40px;
+    height: 900px;
+}
+.card_char1:hover {
+    transform: scale(1.05);
+}
+.t11{
+    font-size: 15px; 
+    margin-top: 5px; 
+    color: #333; 
+    margin-left: 10px;
+}
+
+.card_pro5 {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px; /* حواف بيضوية */
+    overflow: hidden;
+    width: 400px; /* عرض ثابت */
+    height: 400px; /* ارتفاع ثابت */
+    padding: 20px; /* تقليل الحشو داخل البطاقة */
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 0; /* إزالة الفراغ */
+   
+}
+
+.c5{
+    margin-top: 30px;
+}
+.title25 {
+    font-size: 1.0rem; 
+    margin-top: 2px;
+    color: #333; 
+    margin-right: auto;
+    padding: 1px;
+}
+.view-container5 {
+    display: flex; /* استخدام flexbox لتوزيع البطاقات */
+    justify-content: center; /* مركز البطاقات أفقياً */
+    align-items: flex-start; /* محاذاة البطاقات من الأعلى */
+    flex-wrap: wrap; /* السماح بالالتفاف عند الحاجة */
+    gap: 0; /* عدم وجود مسافة بين البطاقات */
+    padding: 20px;
+    background-color: #dcdce0;
+}
+

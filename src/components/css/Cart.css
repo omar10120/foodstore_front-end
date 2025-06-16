@@ -1,0 +1,115 @@
+.container-cart {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 20px; /* Add padding for better spacing */
+    margin-top: 35px;
+}
+
+.card-cart1 {
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px; /* Reduce margin for better spacing */
+    width: 100%; /* Use full width */
+}
+
+.card12{
+    border: 1px solid #dee2e6;
+    background-color:white;
+    border-radius: 8px;
+    transition: box-shadow 0.3s;
+    margin-bottom: 20px; /* Reduce bottom margin */
+    height: auto; /* Allow height to adjust based on content */
+    margin-top: -120px;
+}
+.card_price{
+    border: 1px solid #dee2e6;
+    background-color:white;
+    border-radius: 8px;
+    transition: box-shadow 0.3s;
+    margin-bottom: 20px; /* Reduce bottom margin */
+    
+}
+.card12:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    margin-top: -120px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: #480fe4;
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #19191a;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: auto; 
+    padding: 10px;
+    
+}
+
+.btn-buy {
+    background-color: #480fe4; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100px;
+}
+
+.btn-buy:hover {
+    background-color: #218838; 
+    transform: scale(1.05);
+}
+
+.btn-buy:active {
+    transform: scale(0.95);
+}
+
+.donation-section {
+    margin-top: 20px; 
+    padding: 15px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+}
+
+
+.d-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-Mother {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+@media (max-width: 768px) {
+    .container-cart {
+        padding: 10px; 
+    }
+    
+    .btn-buy {
+        width: 80%; 
+    }
+
+    .card {
+        margin-bottom: 15px; 
+    }
+
+    .card-cart, .card-Mother {
+        padding: 5px; 
+    }
+}

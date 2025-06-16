@@ -1,0 +1,370 @@
+/* Register.css - تصميم متجاوب مع فراغ بين القسمين */
+
+/* متغيرات التصميم */
+:root {
+  --reg-primary: #4361ee;
+  --reg-primary-dark: #3a56d4;
+  --reg-light: #f8f9fa;
+  --reg-dark: #212529;
+  --reg-gray: #6c757d;
+  --reg-white: #ffffff;
+  --reg-success: #4bb543;
+  --reg-error: #ff3333;
+  --reg-radius: 12px;
+  --reg-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --reg-transition: all 0.3s ease;
+  --reg-gap: 2rem; /* فراغ بين القسمين */
+}
+
+/* إعادة الضبط */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* الهيكل الرئيسي */
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--reg-light);
+  padding: 2rem;
+}
+
+.register-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--reg-gap); /* إضافة فراغ بين القسمين */
+  max-width: 1400px; /* زيادة العرض لاستيعاب الفراغ */
+  width: 100%;
+  min-height: 700px;
+  border-radius: var(--reg-radius);
+  overflow: hidden;
+  box-shadow: var(--reg-shadow);
+  background-color: var(--reg-white); /* خلفية للفراغ */
+}
+
+/* القسم الأيسر - النموذج */
+.register-form-container {
+  background-color: var(--reg-white);
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: calc(var(--reg-gap) / 2); /* تعويض الفراغ */
+}
+
+.register-form-wrapper {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.register-header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.register-header h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--reg-dark);
+  margin-bottom: 0.5rem;
+}
+
+.register-header p {
+  font-size: 1rem;
+  color: var(--reg-gray);
+}
+
+/* حقول الإدخال */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dual-input {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--reg-dark);
+}
+
+.form-group input {
+  padding: 0.875rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: var(--reg-transition);
+  width: 100%;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--reg-primary);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+/* اختيار الدور */
+.role-selection {
+  margin: 1.5rem 0;
+}
+
+.role-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--reg-dark);
+  margin-bottom: 0.75rem;
+}
+
+.role-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.role-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: var(--reg-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: var(--reg-transition);
+  font-size: 0.9rem;
+}
+
+.role-btn i {
+  font-size: 1.1rem;
+}
+
+.role-btn.active {
+  background-color: var(--reg-primary);
+  color: var(--reg-white);
+  border-color: var(--reg-primary);
+}
+
+.role-btn:hover:not(.active) {
+  background-color: #f5f5f5;
+}
+
+/* زر التسجيل */
+.submit-row {
+  margin-top: 1.5rem;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 0.875rem;
+  background-color: var(--reg-primary);
+  color: var(--reg-white);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--reg-transition);
+}
+
+.submit-btn:hover {
+  background-color: var(--reg-primary-dark);
+}
+
+/* رابط تسجيل الدخول */
+.login-redirect {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--reg-gray);
+}
+
+.login-redirect a {
+  color: var(--reg-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--reg-transition);
+}
+
+.login-redirect a:hover {
+  text-decoration: underline;
+}
+
+/* القسم الأيمن - الصورة */
+.register-image-container {
+  position: relative;
+  background-color: var(--reg-primary);
+  margin-right: calc(var(--reg-gap) / 2); /* تعويض الفراغ */
+}
+
+.register-image-wrapper {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.register-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  padding: 2.5rem;
+  color: var(--reg-white);
+}
+
+.image-overlay h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.image-overlay p {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* إشعارات الـ Toast */
+.toast-notification {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  min-width: 300px;
+  border-radius: var(--reg-radius);
+  overflow: hidden;
+  box-shadow: var(--reg-shadow);
+  z-index: 1000;
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+.toast-notification.success {
+  background-color: var(--reg-success);
+  color: var(--reg-white);
+}
+
+.toast-notification.error {
+  background-color: var(--reg-error);
+  color: var(--reg-white);
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+
+.toast-icon {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.25rem;
+  margin-left: 1rem;
+  opacity: 0.8;
+  transition: var(--reg-transition);
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* التصميم المتجاوب */
+@media (max-width: 1200px) {
+  .register-grid {
+    --reg-gap: 1rem; /* تقليل الفراغ في الشاشات المتوسطة */
+  }
+}
+
+@media (max-width: 992px) {
+  .register-grid {
+    grid-template-columns: 1fr;
+    max-width: 600px;
+    --reg-gap: 0; /* إزالة الفراغ في الشاشات الصغيرة */
+  }
+  
+  .register-form-container,
+  .register-image-container {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .register-image-container {
+    display: none;
+  }
+  
+  .register-form-container {
+    padding: 2.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .register-container {
+    padding: 1.5rem;
+  }
+  
+  .register-form-container {
+    padding: 2rem;
+  }
+  
+  .dual-input {
+    grid-template-columns: 1fr;
+  }
+  
+  .role-buttons {
+    flex-direction: column;
+  }
+  
+  .register-header h2 {
+    font-size: 1.8rem;
+  }
+}

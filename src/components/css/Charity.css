@@ -1,0 +1,76 @@
+.container_Char {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.card_char {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    transition: 0.3s;
+}
+
+.card_char:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-img4 {
+    width: 100%;
+    height: auto;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.card-text {
+    margin-bottom: 10px;
+}
+
+.btn1 {
+    width: 100%;
+    margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+    .card-title {
+        font-size: 16px;
+    }
+
+    .card-text {
+        font-size: 14px;
+    }
+
+    .btn1 {
+        font-size: 14px;
+    }
+}
+.cart-item1 {
+    margin-bottom: 10px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 150px; 
+    
+   
+}
+
+
+
+.cart-item1 input {
+    width: 100px;
+    margin-top: 23px; 
+}
+
+.cart-item1 button {
+    margin-top: 10px; 
+    align-self: flex-start; 
+}

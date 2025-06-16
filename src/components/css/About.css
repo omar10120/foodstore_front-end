@@ -1,0 +1,237 @@
+/* src/css/About.css */
+.container_about {
+    background-color: #dcdce0;
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.about-us-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card_about {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card_about:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.about-header {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.about-header h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    transition: color 0.3s ease;
+}
+
+.divider {
+    height: 4px;
+    width: 80px;
+    background: linear-gradient(90deg, #3498db, #2c3e50);
+    margin: 0 auto 20px;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+}
+
+.card_about:hover .divider {
+    width: 120px;
+}
+
+.about-content {
+    margin-bottom: 30px;
+}
+
+.lead-text {
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: #34495e;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin: 40px 0;
+}
+
+.feature-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid #eaeaea;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color: #3498db;
+    background: white;
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.2);
+}
+
+.feature-card h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+}
+
+.feature-card p {
+    color: #7f8c8d;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.mission-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #eef2f5 100%);
+    padding: 30px;
+    border-radius: 12px;
+    margin-top: 40px;
+    border-left: 4px solid #3498db;
+    transition: all 0.4s ease;
+}
+
+.mission-section:hover {
+    transform: translateX(5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.mission-section h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.mission-section p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #34495e;
+}
+
+.image-container {
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: all 0.4s ease;
+}
+
+.image-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.about-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.image-container:hover .about-image {
+    transform: scale(1.05);
+}
+
+/* Animation for page load */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card_about {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .card_about {
+        padding: 30px;
+    }
+    
+    .about-header h1 {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .card_about {
+        padding: 25px 20px;
+    }
+    
+    .about-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .lead-text {
+        font-size: 1.1rem;
+    }
+    
+    .features-grid {
+        gap: 15px;
+    }
+    
+    .feature-card {
+        padding: 20px;
+    }
+    
+    .mission-section {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .divider {
+        width: 60px;
+    }
+    
+    .card_about:hover .divider {
+        width: 80px;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.2rem;
+    }
+}

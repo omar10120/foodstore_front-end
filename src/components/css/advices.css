@@ -1,0 +1,413 @@
+/* src/css/advices.css */
+.page-container {
+  margin-top: 20px;
+  background-color: #f9fbf8;
+}
+
+.advices {
+  margin-top: 50px;
+  padding: 0 20px;
+}
+
+.advices__inner {
+  margin-top: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 50px;
+}
+
+.advices-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 20px;
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.advices-main-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.advices-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.advice-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.advice-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 20px 30px;
+  background: linear-gradient(135deg, #3498db, #2c3e50);
+  color: white;
+}
+
+.card-icon {
+  font-size: 24px;
+  margin-right: 15px;
+}
+
+.advices__title {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.card-content {
+  padding: 25px 30px;
+}
+
+.tip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.tip-item {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f8fafd;
+  transition: all 0.3s ease;
+  border-left: 4px solid #3498db;
+}
+
+.tip-item:hover {
+  background: #eef5ff;
+  transform: translateX(5px);
+}
+
+.tip-badge {
+  min-width: 40px;
+  height: 40px;
+  background: #3498db;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.tip-item h3 {
+  color: #2c3e50;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.tip-item p {
+  color: #34495e;
+  margin-bottom: 10px;
+}
+
+.tip-item ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.tip-item li {
+  margin-bottom: 5px;
+  color: #7f8c8d;
+}
+
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+.food-item {
+  padding: 20px;
+  border-radius: 12px;
+  background: #f9fbf8;
+  border: 1px solid #e1f0e1;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.food-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.food-icon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 18px;
+  z-index: 1;
+}
+
+.food-icon::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: currentColor;
+  opacity: 0.15;
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.food-icon.dairy { background-color: #3498db; }
+.food-icon.bread { background-color: #e67e22; }
+.food-icon.vegetable { background-color: #27ae60; }
+.food-icon.fruit { background-color: #9b59b6; }
+.food-icon.meat { background-color: #e74c3c; }
+.food-icon.can { background-color: #f1c40f; }
+
+.food-item h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #2c3e50;
+  padding-right: 50px;
+}
+
+.food-item p {
+  color: #34495e;
+  margin-bottom: 15px;
+}
+
+.recipe-tip {
+  background: rgba(52, 152, 219, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid #3498db;
+  font-size: 0.95rem;
+}
+
+.safety-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.safety-item {
+  padding: 20px;
+  border-radius: 12px;
+  background: #fffaf5;
+  border: 1px solid #ffecd9;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.safety-item:hover {
+  transform: scale(1.03);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.safety-item.critical {
+  background: #fff5f5;
+  border-color: #ffd9d9;
+}
+
+.safety-number {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  width: 40px;
+  height: 40px;
+  background: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.safety-item h3 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.safety-item p {
+  color: #7f8c8d;
+  margin: 0;
+}
+
+.additional-tips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.additional-item {
+  padding: 25px;
+  border-radius: 12px;
+  background: #f8f9fc;
+  border: 1px solid #e0e6f0;
+  transition: all 0.3s ease;
+}
+
+.additional-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.additional-item h3 {
+  color: #2c3e50;
+  margin-top: 0;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+  display: inline-block;
+}
+
+.tip-highlight {
+  background: rgba(46, 204, 113, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 15px;
+  border-left: 3px solid #2ecc71;
+}
+
+.resources-section {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  margin-top: 20px;
+}
+
+.resources-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.youtube-icon {
+  font-size: 32px;
+  color: #ff0000;
+  margin-right: 15px;
+}
+
+.resources-header h2 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.video-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.video-category {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.video-category h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ff0000;
+  display: inline-block;
+}
+
+.video-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+.video-link:last-child {
+  border-bottom: none;
+}
+
+.link-icon {
+  color: #ff0000;
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.video-link a {
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.video-link a:hover {
+  color: #e74c3c;
+  text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .advices-main-title {
+    font-size: 2rem;
+  }
+  
+  .advices__title {
+    font-size: 1.5rem;
+  }
+  
+  .card-header {
+    padding: 15px 20px;
+  }
+  
+  .card-content {
+    padding: 20px;
+  }
+  
+  .tip-grid,
+  .food-grid,
+  .safety-grid,
+  .additional-tips,
+  .video-links {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .advices {
+    margin-top: 30px;
+  }
+  
+  .advices-header {
+    padding: 15px;
+  }
+  
+  .advices-main-title {
+    font-size: 1.7rem;
+  }
+  
+  .advices-subtitle {
+    font-size: 1rem;
+  }
+}

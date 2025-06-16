@@ -1,0 +1,282 @@
+/* Login.css - تصميم متكامل */
+
+/* متغيرات التصميم */
+:root {
+    --login-primary: #4361ee;
+    --login-primary-dark: #3a56d4;
+    --login-text: #2b2d42;
+    --login-light: #f8f9fa;
+    --login-border: #e9ecef;
+    --login-gray: #6c757d;
+    --login-white: #ffffff;
+    --login-error: #e63946;
+    --login-success: #2a9d8f;
+    --login-radius: 12px;
+    --login-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --login-transition: all 0.3s ease;
+  }
+  
+  /* الهيكل الرئيسي */
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--login-light);
+    padding: 2rem;
+  }
+  
+  .login-row {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    min-height: 700px;
+    border-radius: var(--login-radius);
+    overflow: hidden;
+    box-shadow: var(--login-shadow);
+  }
+  
+  /* القسم الأيسر - النموذج */
+  .login-form-col {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--login-white);
+    padding: 3rem;
+  }
+  
+  .login-form-card {
+    width: 100%;
+    max-width: 450px;
+  }
+  
+  .login-form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .login-header {
+    text-align: center;
+  }
+  
+  .login-title {
+    font-size: 2.2rem;
+    color: var(--login-text);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+  }
+  
+  .login-subtitle {
+    font-size: 1rem;
+    color: var(--login-gray);
+  }
+  
+  /* حقول الإدخال */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .login-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .login-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--login-text);
+  }
+  
+  .login-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--login-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--login-transition);
+  }
+  
+  .login-input:focus {
+    outline: none;
+    border-color: var(--login-primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+  }
+  
+  .login-error {
+    color: var(--login-error);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+  }
+  
+  /* زر الدخول */
+  .login-submit-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background-color: var(--login-primary);
+    color: var(--login-white);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--login-transition);
+  }
+  
+  .login-submit-btn:hover {
+    background-color: var(--login-primary-dark);
+  }
+  
+  /* روابط التحويل */
+  .login-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--login-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .login-footer-text {
+    font-size: 0.9rem;
+    color: var(--login-gray);
+  }
+  
+  .login-footer-link {
+    color: var(--login-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--login-transition);
+  }
+  
+  .login-footer-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* القسم الأيمن - الصورة */
+  .login-image-col {
+    flex: 1;
+    position: relative;
+    background-color: var(--login-primary);
+  }
+  
+  .login-image-container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .login-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .login-image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: 2.5rem;
+    color: var(--login-white);
+  }
+  
+  .login-overlay-title {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .login-overlay-text {
+    font-size: 1rem;
+    opacity: 0.9;
+  }
+  
+  /* إشعارات الـ Toast */
+  .login-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    min-width: 300px;
+    border-radius: var(--login-radius);
+    overflow: hidden;
+    box-shadow: var(--login-shadow);
+    z-index: 1000;
+    animation: login-slideIn 0.3s ease-out;
+  }
+  
+  .login-toast-header {
+    background-color: var(--login-primary);
+    color: var(--login-white);
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .login-toast-body {
+    padding: 1rem;
+    background-color: var(--login-white);
+    color: var(--login-text);
+  }
+  
+  .login-toast-close {
+    background: none;
+    border: none;
+    color: var(--login-white);
+    cursor: pointer;
+    font-size: 1.25rem;
+    opacity: 0.8;
+    transition: var(--login-transition);
+  }
+  
+  .login-toast-close:hover {
+    opacity: 1;
+  }
+  
+  @keyframes login-slideIn {
+    from {
+      transform: translateY(100px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  /* التصميم المتجاوب */
+  @media (max-width: 992px) {
+    .login-row {
+      flex-direction: column;
+      min-height: auto;
+    }
+    
+    .login-image-col {
+      display: none;
+    }
+    
+    .login-form-col {
+      padding: 2rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .login-container {
+      padding: 1rem;
+    }
+    
+    .login-title {
+      font-size: 1.8rem;
+    }
+    
+    .login-footer {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+  }

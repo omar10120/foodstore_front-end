@@ -1,0 +1,23 @@
+.App {
+    display: flex;
+    flex-direction: column;
+    height: 1vh;
+  }
+  
+  .d-flex {
+    display: flex;
+    flex: 1;
+  }
+  
+  .col-2 {
+    width: 20%; /* Adjust this value to control the width of BarSide */
+  }
+  
+  .col-10 {
+    width: 80%; /* Adjust this value to control the width of the content area */
+  }
+  
+  .content {
+    padding: 20px; /* Add some padding for content */
+  }
+  

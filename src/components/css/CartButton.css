@@ -1,0 +1,58 @@
+CartButton.css
+.cb-button {
+    position: relative;
+    background-color: var(--primary-blue);
+    /* color: var(--white); */
+    color: red;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .cb-button:hover {
+    background-color: var(--dark-blue);
+    transform: scale(1.05);
+  }
+  
+  .cb-icon {
+    font-size: 1.5rem;
+  }
+  
+  .cb-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--accent-red);
+    color: var(--white);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+  }
+  
+  @media (max-width: 768px) {
+    .cb-button {
+      width: 44px;
+      height: 44px;
+    }
+    
+    .cb-icon {
+      font-size: 1.3rem;
+    }
+    
+    .cb-badge {
+      width: 20px;
+      height: 20px;
+      font-size: 0.7rem;
+    }
+  }
