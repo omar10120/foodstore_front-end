@@ -1,281 +1,397 @@
-import React, { useState } from "react";
-import "../css/AddProduct.css";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import "../css/Edit.css";
+import axios from 'axios';
 
-function AddProducts() {
+function AddProduct() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [error, setError] = useState("");
+  const token = useSelector((state) => state.auth.token);
+  const [showModal, setShowModal] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  // Initialize form data with default values
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category_id: "",
+    productName: "",
+    productDescription: "",
+    categoryIdInput: "",
     quantity: "",
-    expiration_date: "",
-    after_discount: "",
-    before_discount: "",
-    availability: false,
-    image: null,
+    expiryDate: "",
+    productPrice: "",
+    availabilityStatus: true,
+    image: null
   });
 
-  const [errors, setErrors] = useState({});
-  const [showModal, setShowModal] = useState(false);
-  const [apiResponse, setApiResponse] = useState(null);
+  // Create Axios instance with base configuration
+  const axiosInstance = axios.create({
+    baseURL: "http://localhost:8080",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get("/api/categories");
+        
+        setCategories(response.data);
+      } catch (err) {
+        if (err.response && err.response.status === 401) {
+          navigate("/login");
+        } else {
+          setError(err.response?.data?.message || "Failed to load categories");
+          console.error("Fetch categories error:", err);
+        }
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    if (token) {
+      fetchCategories();
+    } else {
+      setError("Authentication token not found");
+      setCategoriesLoading(false);
+    }
+  }, [token, navigate]);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    const { name, value, type, checked, files } = e.target;
+    
+    // Handle file input separately
+    if (type === "file") {
+      setFormData({
+        ...formData,
+        [name]: files[0] // Only take the first file
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === "checkbox" ? checked : value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newErrors = validateForm(formData);
+    setError("");
+    setLoading(true);
+    
+    if (!token) {
+      setError("Authentication token not found");
+      setLoading(false);
+      return;
+    }
+    
+    // Validate category selection
+    if (!formData.categoryIdInput) {
+      setError("Please select a category");
+      setLoading(false);
+      return;
+    }
+    
+    // Prepare form data for submission
+    const formDataToSend = new FormData();
+    formDataToSend.append("productName", formData.productName);
+    formDataToSend.append("productDescription", formData.productDescription);
+    formDataToSend.append("categoryIdInput", formData.categoryIdInput);
+    formDataToSend.append("quantity", formData.quantity);
+    formDataToSend.append("expiryDate", formData.expiryDate);
+    formDataToSend.append("productPrice", formData.productPrice);
+    formDataToSend.append("availabilityStatus", formData.availabilityStatus);
+    
+    if (formData.image) {
+      formDataToSend.append("image", formData.image);
+    }
 
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        const response = await axios.post("http://localhost:8080/api/cart-items/add", {
-          productId: formData.category_id,
-          quantity: formData.quantity
-        });
-        setApiResponse(response.data);
-        setShowModal(true);
-        resetForm();
-      } catch (error) {
-        console.error("Error submitting form:", error);
-        setErrors({ submit: "Failed to add product to cart" });
+    try {
+      const response = await axiosInstance.post(
+        "/api/products/seller",
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
+      console.log("Product added:", response.data);
+      setShowModal(true);
+    } catch (error) {
+      let errorMessage = "Failed to add product";
+      
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        console.error("Server responded with error:", error.response);
+        
+        if (error.response.status === 401) {
+          navigate("/login");
+          return;
+        }
+        
+        if (error.response.data && typeof error.response.data === 'object') {
+          errorMessage = error.response.data.message || JSON.stringify(error.response.data);
+        } else if (error.response.data) {
+          errorMessage = error.response.data;
+        } else {
+          errorMessage = `Server error: ${error.response.status} ${error.response.statusText}`;
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("No response received:", error.request);
+        errorMessage = "No response from server";
+      } else {
+        // Something happened in setting up the request
+        console.error("Request setup error:", error.message);
+        errorMessage = error.message;
       }
-    } else {
-      setErrors(newErrors);
+      
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const validateForm = (data) => {
-    const newErrors = {};
-    if (!data.title) newErrors.title = "Title is required.";
-    if (!data.description) newErrors.description = "Description is required.";
-    if (!data.category_id) newErrors.category_id = "Category ID is required.";
-    if (!data.quantity) newErrors.quantity = "Quantity is required.";
-    if (!data.expiration_date) newErrors.expiration_date = "Expiration date is required.";
-    if (!data.after_discount) newErrors.after_discount = "After discount price is required.";
-    if (!data.before_discount) newErrors.before_discount = "Before discount price is required.";
-    if (!data.image) newErrors.image = "Image upload is required.";
-    return newErrors;
-  };
-
-  const resetForm = () => {
-    setFormData({
-      title: "",
-      description: "",
-      category_id: "",
-      quantity: "",
-      expiration_date: "",
-      after_discount: "",
-      before_discount: "",
-      availability: false,
-      image: null,
-    });
-    setErrors({});
-  };
-
   return (
-    <div className="Add container mt-5" style={{  marginTop: "10px" }}>
-      <div className="card_add" style={{  marginTop: "1.5rem" }}>
-        <form onSubmit={handleSubmit} >
-          <h5>Add New Product</h5>
-
-          <div className="row mb-3">
-            <div className="col-md-6">
-              <label htmlFor="title" className="form-label">Name Product</label>
-              <input
-                type="text"
-                className={`form-control ${errors.title ? "is-invalid" : ""}`}
-                id="title"
-                name="title"
-                placeholder="Name Product"
-                value={formData.title}
-                onChange={handleChange}
-                required
-              />
-              {errors.title && <div className="invalid-feedback">{errors.title}</div>}
-            </div>
-            <div className="col-md-6">
-              <label htmlFor="description" className="form-label">Details about Product</label>
-              <input
-                type="text"
-                className={`form-control ${errors.description ? "is-invalid" : ""}`}
-                id="description"
-                name="description"
-                placeholder="Details about Product"
-                value={formData.description}
-                onChange={handleChange}
-                required
-              />
-              {errors.description && <div className="invalid-feedback">{errors.description}</div>}
-            </div>
-          </div>
-          <div className="row mb-3">
-            <div className="col-md-4">
-              <label htmlFor="category_id" className="form-label">Category</label>
-              <input
-                type="number"
-                className={`form-control ${errors.category_id ? "is-invalid" : ""}`}
-                id="category_id"
-                name="category_id"
-                placeholder="Category"
-                value={formData.category_id}
-                onChange={handleChange}
-                required
-              />
-              {errors.category_id && <div className="invalid-feedback">{errors.category_id}</div>}
-            </div>
-            <div className="col-md-4">
-              <label htmlFor="quantity" className="form-label">Amount</label>
-              <input
-                type="number"
-                className={`form-control ${errors.quantity ? "is-invalid" : ""}`}
-                id="quantity"
-                name="quantity"
-                placeholder="Amount"
-                value={formData.quantity}
-                onChange={handleChange}
-                required
-              />
-              {errors.quantity && <div className="invalid-feedback">{errors.quantity}</div>}
-            </div>
-            <div className="col-md-4">
-              <label htmlFor="expiration_date" className="form-label">Expiration Date</label>
-              <input
-                type="date"
-                className={`form-control ${errors.expiration_date ? "is-invalid" : ""}`}
-                id="expiration_date"
-                name="expiration_date"
-                value={formData.expiration_date}
-                onChange={handleChange}
-                required
-              />
-              {errors.expiration_date && <div className="invalid-feedback">{errors.expiration_date}</div>}
-            </div>
-          </div>
-          <div className="row g-3 mb-3">
-            <div className="col-md-4">
-              <label htmlFor="after_discount" className="form-label">After Discount:</label>
-              <input
-                type="number"
-                className={`form-control ${errors.after_discount ? "is-invalid" : ""}`}
-                id="after_discount"
-                name="after_discount"
-                placeholder="After Discount:"
-                value={formData.after_discount}
-                onChange={handleChange}
-                required
-              />
-              {errors.after_discount && <div className="invalid-feedback">{errors.after_discount}</div>}
-            </div>
-            <div className="col-md-4">
-              <label htmlFor="before_discount" className="form-label">Before Discount:</label>
-              <input
-                type="number"
-                className={`form-control ${errors.before_discount ? "is-invalid" : ""}`}
-                id="before_discount"
-                name="before_discount"
-                placeholder="Before Discount:"
-                value={formData.before_discount}
-                onChange={handleChange}
-                required
-              />
-              {errors.before_discount && <div className="invalid-feedback">{errors.before_discount}</div>}
-            </div>
-            <div className="col-md-4">
-              <label htmlFor="availability" className="form-label">Availability:</label>
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="availability"
-                name="availability"
-                checked={formData.availability}
-                onChange={handleChange}
-              />
-              <label className="form-check-label" htmlFor="availability">Available</label>
-            </div>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="image" className="form-label">Upload Image</label>
-            <input
-              type="file"
-              className={`form-control ${errors.image ? "is-invalid" : ""}`}
-              id="image"
-              name="image"
-              onChange={(e) => setFormData({ ...formData, image: e.target.files[0] })}
-              required
-            />
-            {errors.image && <div className="invalid-feedback">{errors.image}</div>}
-          </div>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{ width: "200px", backgroundColor: "gray", marginLeft: "350px" }}
-          >
-            Add
-          </button>
-        </form>
-      </div>
+    <div className="EditProduct_container mt-5">
       <div
-        className={`modal fade ${showModal ? "show" : ""}`}
-        id="staticBackdrop"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        style={{ display: showModal ? "block" : "none" }}
-        tabIndex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden={!showModal}
+        className="card_add"
+        style={{ maxWidth: "1000px", margin: "0 auto", padding: "20px" }}
       >
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h1 className="modal-title fs-5" id="staticBackdropLabel" style={{ marginLeft: "100px" }}>
-                Success
-              </h1>
-              <button
-                type="button"
-                className="btn-close"
-                onClick={() => setShowModal(false)}
-                aria-label="Close"
-              ></button>
+        {error && (
+          <div className="alert alert-danger mb-4" role="alert">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <h5 className="mb-4">Add New Product</h5>
+          
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <label htmlFor="productName" className="form-label">
+                Product Name *
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="productName"
+                name="productName"
+                required
+                value={formData.productName}
+                onChange={handleChange}
+              />
             </div>
-            <div className="modal-body">
-              {apiResponse ? (
-                <>
-                  <p>Product added to cart successfully!</p>
-                  <p>Quantity: {apiResponse.quantity}</p>
-                  <p>Price: {apiResponse.price}</p>
-                </>
+            
+            <div className="col-md-6">
+              <label htmlFor="productDescription" className="form-label">
+                Product Description *
+              </label>
+              <textarea
+                className="form-control"
+                id="productDescription"
+                name="productDescription"
+                required
+                rows="3"
+                value={formData.productDescription}
+                onChange={handleChange}
+              ></textarea>
+            </div>
+          </div>
+          
+          <div className="row mb-3">
+            <div className="col-md-4">
+              <label htmlFor="categoryIdInput" className="form-label">
+                Category *
+              </label>
+              {categoriesLoading ? (
+                <div className="d-flex align-items-center">
+                  <div className="spinner-border spinner-border-sm me-2" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  <span>Loading categories...</span>
+                </div>
               ) : (
-                <p>Your product has been added successfully!</p>
+                <select
+                  className="form-select"
+                  id="categoryIdInput"
+                  name="categoryIdInput"
+                  required
+                  value={formData.categoryIdInput}
+                  onChange={handleChange}
+                >
+                  <option value="">Select Category</option>
+                  {categories.map(category => (
+                    <option key={category.categoriesId} value={category.categoriesId}>
+                      {category.categoriesName}
+                    </option>
+                  ))}
+                </select>
               )}
             </div>
-            <div className="modal-footer" style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+            
+            <div className="col-md-4">
+              <label htmlFor="quantity" className="form-label">
+                Quantity *
+              </label>
+              <input
+                type="number"
+                className="form-control"
+                id="quantity"
+                name="quantity"
+                required
+                min="0"
+                value={formData.quantity}
+                onChange={handleChange}
+              />
+            </div>
+            
+            <div className="col-md-4">
+              <label htmlFor="expiryDate" className="form-label">
+                Expiration Date *
+              </label>
+              <input
+                type="date"
+                className="form-control"
+                id="expiryDate"
+                name="expiryDate"
+                required
+                value={formData.expiryDate}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          
+          <div className="row g-3 mb-4">
+            <div className="col-md-6">
+              <label htmlFor="productPrice" className="form-label">
+                Price (₫) *
+              </label>
+              <input
+                type="number"
+                className="form-control"
+                id="productPrice"
+                name="productPrice"
+                required
+                // min="0"
+                // step="1000"
+                value={formData.productPrice}
+                onChange={handleChange}
+              />
+            </div>
+            
+            <div className="col-md-6 d-flex align-items-end">
+              <div className="form-check form-switch">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="availabilityStatus"
+                  name="availabilityStatus"
+                  checked={formData.availabilityStatus}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor="availabilityStatus">
+                  Product Available
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="image" className="form-label">
+              Product Image
+            </label>
+            
+            <input
+              type="file"
+              className="form-control"
+              id="image"
+              name="image"
+              accept="image/*"
+              onChange={handleChange}
+            />
+            <div className="form-text">
+              Upload product image (optional)
+            </div>
+          </div>
+          
+          <div className="d-flex justify-content-between mt-4">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => navigate("../ProductSellers")}
+              disabled={loading || categoriesLoading}
+            >
+              Cancel
+            </button>
+            
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={{ width: "150px" }}
+              disabled={loading || categoriesLoading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Adding...
+                </>
+              ) : (
+                "Add Product"
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Success Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => {
+          setShowModal(false);
+          navigate("../ProductSellers")
+          
+          
+        }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h5 className="modal-title">Success</h5>
+              <button
+                type="button"
+                className="close-button"
+                onClick={() => {
+                  setShowModal(false);
+                  navigate("../ProductSellers")
+                }}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>Your product has been added successfully!</p>
+            </div>
+            <div className="modal-footer">
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => setShowModal(false)}
-                style={{ width: "100px", height: "37px" }}
+                onClick={() => {
+                  setShowModal(false);
+                  navigate("../ProductSellers")
+                }}
               >
-                Save
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setShowModal(false)}
-                style={{ width: "100px" }}
-              >
-                Close
+                Back to Products
               </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-export default AddProducts;
+export default AddProduct;

@@ -1,44 +1,87 @@
 import { Link } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 function ProductSellers() {
-    const [products, setProducts] = useState(Array.from({ length: 15 }, (_, index) => ({
-        id: index + 1001,
-        image: 'random-image.jpg',
-        name: `Product ${index + 1}`,
-        details: `Details about Product ${index + 1}`,
-        expirationDate: '2023-12-31',
-        category: `Category ${index + 1}`,
-        amount: Math.floor(Math.random() * 100),
-        beforeDiscount: Math.floor(Math.random() * 100),
-        afterDiscount: Math.floor(Math.random() * 80),
-        availability: index % 2 === 0,
-    })));
+    const token = useSelector((state) => state.auth.token);
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const handleDelete = (id) => {
-        setProducts(products.filter(product => product.id !== id));
+    // Fetch products from API
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get(
+                    'http://localhost:8080/api/products/seller',
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+                setProducts(response.data);
+                setLoading(false);
+            } catch (err) {
+                setError('Failed to fetch products');
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, [token]);
+
+    // Delete product
+    const handleDelete = async (productId) => {
+        try {
+            await axios.delete(
+                `http://localhost:8080/api/products/delete/${productId}?productId=${productId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            setProducts(products.filter(product => product.productId !== productId));
+        } catch (err) {
+            setError('Failed to delete product');
+        }
     };
 
-    const handleUpdate = (updatedProduct) => {
-        setProducts(products.map(product => 
-            product.id === updatedProduct.id ? updatedProduct : product
-        ));
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center mt-5">
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return <div className="alert alert-danger mt-3">{error}</div>;
+    }
+
+    // Format date to YYYY-MM-DD
+    const formatDate = (dateString) => {
+        return new Date(dateString).toISOString().split('T')[0];
     };
 
     return (
-        <div className='card-p' style={{ margin: '7px' ,width:'100%' ,marginTop:'70px'}}>
-            <div className="text-right mb-3"style={{ fontSize: '16px', padding: '5px 10px',marginLeft:'100px' ,marginTop:'-10px' }}>
+        <div className='card-p' style={{ margin: '7px', width: '100%', marginTop: '70px' }}>
+            <div className="text-right mb-3" style={{ fontSize: '16px', padding: '5px 10px', marginLeft: '100px', marginTop: '-10px' }}>
                 <Link 
                     to="/AddProduct" 
                     className="btn btn-success" 
-                    style={{ fontSize: '16px', padding: '5px 10px',marginLeft:'900px' ,marginTop:'10px' }}
+                    style={{ fontSize: '16px', padding: '5px 10px', marginLeft: '900px', marginTop: '10px' }}
                 >
-                    <i className="bi bi-plus-circle-fill" style={{ }}></i>
+                    <i className="bi bi-plus-circle-fill"></i>
                     Add New Product
                 </Link>
             </div>
             <h2>Products</h2>
-            <div className="table-responsive"style={{ margin: '7px' ,width:'100%' }}>
+            <div className="table-responsive" style={{ margin: '7px', width: '100%' }}>
                 <table className="table table-striped table-sm">
                     <thead>
                         <tr>
@@ -49,28 +92,30 @@ function ProductSellers() {
                             <th scope="col">Expiration Date</th>
                             <th scope="col">Category</th>
                             <th scope="col">Amount</th>
-                            <th scope="col">Before Discount</th>
-                            <th scope="col">After Discount</th>
+                            <th scope="col">Price</th>
                             <th scope="col">Availability</th>
                             <th scope="col">Operations</th>
                         </tr>
                     </thead>
                     <tbody>
                         {products.map(product => (
-                            <tr key={product.id}>
-                                <td>{product.id}</td>
+                            <tr key={product.productId}>
+                                <td>{product.productId}</td>
                                 <td>
-                                    <img src={product.image} alt={product.name} style={{ width: '50px', height: '50px' }} />
+                                    <img 
+                                        src={product.imagePath || 'https://via.placeholder.com/50'} 
+                                        alt={product.productName} 
+                                        style={{ width: '50px', height: '50px' }} 
+                                    />
                                 </td>
-                                <td>{product.name}</td>
-                                <td>{product.details}</td>
-                                <td>{product.expirationDate}</td>
-                                <td>{product.category}</td>
-                                <td>{product.amount}</td>
-                                <td>{product.beforeDiscount}</td>
-                                <td>{product.afterDiscount}</td>
+                                <td>{product.productName}</td>
+                                <td>{product.productDescription}</td>
+                                <td>{formatDate(product.expiryDate)}</td>
+                                <td>{product.categoryId.categoriesName}</td>
+                                <td>{product.quantity}</td>
+                                <td>${product.productPrice.toLocaleString()}</td>
                                 <td>
-                                    {product.availability ? (
+                                    {product.availabilityStatus ? (
                                         <i className="bi bi-check-circle-fill" style={{ color: 'green' }}></i>
                                     ) : (
                                         ' Not Available'
@@ -78,25 +123,26 @@ function ProductSellers() {
                                 </td>
                                 <td>
                                     <Link 
-                                        to={`/viewProduct/${product.id}`} 
+                                        to={`/viewProduct/${product.productId}`} 
                                         className="btn btn-info btn-sm mt-2" 
-                                        style={{ fontSize: '12px', padding: '5px 10px', marginLeft: '4px',backgroundColor:'gray' }}
+                                        style={{ fontSize: '12px', padding: '5px 10px', marginLeft: '4px', backgroundColor: 'gray' }}
                                     >
                                         <i className="bi bi-info-circle"></i> View
                                     </Link>
+                                        
 
                                     <button 
                                         className="btn btn-danger btn-sm mt-2" 
                                         style={{ fontSize: '12px', padding: '5px 10px', marginLeft: '5px' }}
-                                        onClick={() => handleDelete(product.id)}
+                                        onClick={() => handleDelete(product.productId)}
                                     >
                                         <i className="bi bi-file-earmark-x"></i> Delete
                                     </button>
 
                                     <Link 
-                                        to={`/EditProduct/${product.id}`} 
+                                        to={`/EditProduct/${product.productId}`} 
                                         className="btn btn-info btn-sm mt-2" 
-                                        style={{ fontSize: '12px', padding: '5px 10px', marginLeft: '4px' ,backgroundColor:'gray' }}
+                                        style={{ fontSize: '12px', padding: '5px 10px', marginLeft: '4px', backgroundColor: 'gray' }}
                                     >
                                         <i className="bi bi-pencil-fill"></i> Edit
                                     </Link>

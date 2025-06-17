@@ -1,8 +1,10 @@
 import React from 'react';
 import './css/Discount.css';
 import { height } from '@mui/system';
+import { useNavigate } from "react-router-dom";
 
 function Discounts() {
+    const navigate = useNavigate();
     return (
         <div className="container-dis" style={{ 
             maxWidth: '100%', 
@@ -36,7 +38,7 @@ function Discounts() {
                             src={`${process.env.PUBLIC_URL}/images/R (1).png`}
                             alt="Discount Product" 
                         />
-                        <button type="button" className="w-100 btn btn-lg btn-primary" style={{ padding: '10px' }}>
+                        <button type="button" onClick={() =>navigate("../subscribe")} className="w-100 btn btn-lg btn-primary"  style={{ padding: '10px' }}>
                         Subscribe
                         </button>
                     </div>

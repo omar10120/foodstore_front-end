@@ -2,17 +2,20 @@ import './css/DetailsProducts.css';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useSelector } from "react-redux";
 
 function DetailsProduct() {
     const [product, setProduct] = useState(null);
     const [addToCart, setAddToCart] = useState(false);
     const [showMore, setShowMore] = useState(false);
     const [showErrorToast, setShowErrorToast] = useState(false);
-    const [inputAmount, setInputAmount] = useState(0);
+    
+    const [inputAmount, setInputAmount] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    
     const navigate = useNavigate();
     const { productId } = useParams();
-
+    const token = useSelector((state) => state.auth.token);
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -55,17 +58,21 @@ function DetailsProduct() {
             setTimeout(() => setShowErrorToast(false), 3000);
             return;
         }
-
+    
         try {
-            await axios.post('http://localhost:8080/api/cart-items/add', {
-                buyerId: 28,
-                productId: productId,
-                quantity: inputAmount,
-            });
+            // Fixed request structure
+            await axios.post(
+                'http://localhost:8080/api/cart-items/add',
+                { productId, quantity: inputAmount },  // Request body
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
             setAddToCart(true);
-            setTimeout(() => {
-                setAddToCart(false);
-            }, 3000);
+            setTimeout(() => setAddToCart(false), 3000);
         } catch (error) {
             console.error('Error adding product to cart:', error);
             alert('Failed to add product to the cart.');
@@ -78,14 +85,24 @@ function DetailsProduct() {
             setTimeout(() => setShowErrorToast(false), 3000);
             return;
         }
-
+    
         try {
-            await axios.post('http://localhost:8080/api/cart-items/donate', {
-                buyerId: 28,
-                productId: productId,
-                quantity: inputAmount,
-                charityId: 1,
-            });
+            await axios.post(
+                'http://localhost:8080/api/cart-items/donate',
+                {
+
+                    productId,
+                    quantity: inputAmount,
+                    charityId: 1,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+
+                    }
+                }
+            );
             navigate('/charity');
         } catch (error) {
             console.error('Error donating product:', error);
@@ -161,7 +178,7 @@ function DetailsProduct() {
                             <input
                                 type="number"
                                 placeholder="Enter Amount"
-                                value={inputAmount || ''}
+                                value={inputAmount}
                                 onChange={(e) => handleAmountChange(e.target.value)}
                                 className={`form-control ${errorMessage ? 'is-invalid' : ''}`}
                             />

@@ -1,163 +1,214 @@
+// Charity.js
 import { useDispatch, useSelector } from 'react-redux';
-import './css/Charity.css';
 import { useState, useEffect } from 'react';
 import { fetchGetAllCharities } from './Redux/Slices/CharitySlice';
 import CartButton from './CartButton';
-import './css/Product.css';
 import { useNavigate } from 'react-router-dom';
+import './css/Charity.css';
 
-function Charity() {
-    const [showErrorToast, setShowErrorToast] = useState(false);
-    const [showErrorToast1, setShowErrorToast1] = useState(false);
-    const [showCart, setShowCart] = useState(false);
-    const { charity, error, loading } = useSelector(state => state.charitySlice);
-    const products = useSelector(state => state.productSlice.productsArray); 
-    const dispatch = useDispatch();
-    const [inputAmount, setInputAmount] = useState(1);
-    const navigate = useNavigate();
-    const [cartItems, setCartItems] = useState(() => {
-        const savedCart = localStorage.getItem('cartItems');
-        return savedCart ? JSON.parse(savedCart) : [];
-    });
+function Charity(productid) {
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+  const { charity, error, loading } = useSelector(state => state.charitySlice);
+  const products = useSelector(state => state.productSlice.productsArray); 
+  const dispatch = useDispatch();
+  const [inputAmount, setInputAmount] = useState(1);
+  const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCart = localStorage.getItem('cartItems');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-    const toggleDropdown = () => {
-        setShowCart(prevShow => !prevShow);
+  const toggleDropdown = () => {
+    setShowCart(prevShow => !prevShow);
+  };
+
+  useEffect(() => {
+    dispatch(fetchGetAllCharities());
+  }, [dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
+
+  const handleButtonClick = () => {
+    setShowErrorToast(true);
+    setTimeout(() => {
+      setShowErrorToast(false);
+    }, 3000);
+  };
+
+  const addToCart = (charity, product) => {
+    if (!charity || !product || !inputAmount || inputAmount < 1) {
+      return; 
+    }
+
+    const newItem = {
+      name: charity.charityName, 
+      productName: product.productName, 
+      quantity: inputAmount,
+      charityId: charity.charityId,
+      charityInfo: charity.charityInfo
     };
 
-    useEffect(() => {
-        dispatch(fetchGetAllCharities());
-    }, [dispatch]);
+    setCartItems(prevItems => [...prevItems, newItem]); 
+    setInputAmount(1); 
+    handleButtonClick(); 
+  };
 
-    useEffect(() => {
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
-    }, [cartItems]);
+  const updateQuantity = (index, value) => {
+    const updatedItems = [...cartItems];
+    updatedItems[index].quantity = Math.max(1, value);
+    setCartItems(updatedItems);
+  };
 
-    const handleButtonClick = () => {
-        setShowErrorToast(true);
-        setTimeout(() => {
-            setShowErrorToast(false);
-        }, 3000);
-    };
+  const removeCartItem = (index) => {
+    const updatedItems = cartItems.filter((_, i) => i !== index);
+    setCartItems(updatedItems);
+  };
 
-    const addToCart = (charity, product) => {
-        if (!charity || !product || !inputAmount || inputAmount < 1) {
-            return; 
-        }
-
-        const newItem = {
-            name: charity.charityName, 
-            productName: product.productName, 
-            quantity: inputAmount,
-        };
-
-        setCartItems(prevItems => [...prevItems, newItem]); 
-        setInputAmount(1); 
-        handleButtonClick(); 
-    };
-
-    const updateQuantity = (index, value) => {
-        const updatedItems = [...cartItems];
-        updatedItems[index].quantity = Math.max(1, value);
-        setCartItems(updatedItems);
-    };
-
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error: {error}</div>;
-
+  if (loading) {
     return (
-        <div className="container_Char">
-            <CartButton cartItems={cartItems} toggleDropdown={toggleDropdown} />
-            {showCart && (
-                <div className="cart-dropdown">
-                    {cartItems.length > 0 ? (
-                        cartItems.map((item, index) => (
-                            <div key={index} className="cart-item1 card_char" style={{
-                                marginBottom: '10px',
-                                padding: '10px',
-                                border: '1px solid #ccc',
-                                borderRadius: '5px',
-                                height: '200px'
-                            }}>
-                                <p style={{ marginTop: '5px' }}>
-                                    Charity:{item.name} - 
-                                    Product:{item.productName} 
-                                </p>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    value={item.quantity}
-                                    onChange={(e) => updateQuantity(index, e.target.value)}
-                                    style={{
-                                        width: '100px',
-                                        marginRight: '5px',
-                                        marginTop: '10px'
-                                    }}
-                                />
-                                <button 
-                                    style={{ marginLeft: '10px',backgroundColor: 'blue', 
-                                        color: 'white', }}
-                                    onClick={() => setShowErrorToast1(true)}>+</button>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No items in the cart.</p>
-                    )}
-                </div>
-            )}
-
-            {charity.map(ch => (
-                <div className="card_char" key={ch.id}>
-                    <img 
-                        className="card-img4" 
-                        src={`${process.env.PUBLIC_URL}/images/OIP (9).jfif`} 
-                        alt={`Charity: ${ch.charityName}`} 
-                    />
-                    <div className="card-body">
-                        <h5 className="card-title">{ch.charityName}</h5>
-                        <p className="card-text">Phone: {ch.charityInfo}</p>
-                        <p className="card-text">Description: {ch.charityDescription}</p>
-                        <button className="btn1 btn-info"
-                         style={{backgroundColor: 'blue', 
-                            color: 'white',}}
-                        onClick={() => addToCart(ch, products[0])}> 
-                            <div style={{ color: 'white' }}>
-                                <i className="bi bi-plus-circle-fill"></i> Donation
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            ))}
-
-            {showErrorToast && (
-                <div className="toast-container position-fixed bottom-0 end-0 p-3">
-                    <div className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div className="toast-header">
-                            <strong className="me-auto">Warning</strong>
-                            <small>Now</small>
-                            <button type="button" className="btn-close" onClick={() => setShowErrorToast(false)} aria-label="Close"></button>
-                        </div>
-                        <div className="toast-body">
-                            Successful Choice Charity! Thanks!
-                        </div>
-                    </div>
-                </div>
-            )}
-            {showErrorToast1 && (
-                <div className="toast-container position-fixed bottom-0 end-0 p-3">
-                    <div className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                        <div className="toast-header">
-                            <strong className="me-auto">Warning</strong>
-                            <small>Now</small>
-                            <button type="button" className="btn-close" onClick={() => setShowErrorToast1(false)} aria-label="Close"></button>
-                        </div>
-                        <div className="toast-body">
-                            Successful Add Product to Cart! Thanks!
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
+      <div className="loading-container">
+        <div className="spinner"></div>
+        <p>Loading charities...</p>
+      </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="error-container">
+        <div className="error-icon">⚠️</div>
+        <h3>Error Loading Charities</h3>
+        <p>{error}</p>
+        <button className="retry-button" onClick={() => window.location.reload()}>
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="charity-page">
+      <div className="charity-header">
+        <h1>Support Our Charities</h1>
+        <p>Make a difference by donating to these wonderful organizations</p>
+      </div>
+      
+      <CartButton cartItems={cartItems} toggleDropdown={toggleDropdown} />
+      
+      {showCart && (
+        <div className="cart-dropdown">
+          <div className="cart-header">
+            <h3>Your Donations</h3>
+            <button className="close-cart" onClick={() => setShowCart(false)}>
+              &times;
+            </button>
+          </div>
+          
+          {cartItems.length > 0 ? (
+            <div className="cart-items-container">
+              {cartItems.map((item, index) => (
+                <div key={index} className="cart-item">
+                  <div className="cart-item-content">
+                    <h4>{item.name}</h4>
+                    <p>Donation: {item.productName}</p>
+                    <div className="quantity-controls">
+                      <input
+                        type="number"
+                        min="1"
+                        value={item.quantity}
+                        onChange={(e) => updateQuantity(index, e.target.value)}
+                      />
+                      <button 
+                        className="remove-btn"
+                        onClick={() => removeCartItem(index)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="empty-cart">No donations in your cart</p>
+          )}
+          
+          {cartItems.length > 0 && (
+            <div className="cart-footer">
+              <button 
+                className="checkout-btn"
+                onClick={() => navigate('/checkout')}
+              >
+                Proceed to Checkout
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="charity-grid">
+        {charity.map(ch => (
+          <div className="charity-card" key={ch.charityId}>
+            <div className="card-header">
+              <div className="charity-logo">
+                <div className="logo-placeholder">{ch.charityName.charAt(0)}</div>
+              </div>
+              <div className="charity-info">
+                <h3>{ch.charityName}</h3>
+                <div className="contact-info">
+                  <span>📞 {ch.charityInfo}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="card-body">
+              <p className="description">{ch.charityDescription}</p>
+              
+              <div className="donation-controls">
+                <div className="input-group">
+                  <label>Quantity:</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={inputAmount}
+                    onChange={(e) => setInputAmount(Math.max(1, e.target.value))}
+                  />
+                </div>
+                
+                <button 
+                  className="donate-btn"
+                  onClick={() => addToCart(ch, products[0])}
+                >
+                  <span>Donate Now</span>
+                  <span className="heart-icon">❤️</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {showErrorToast && (
+        <div className="toast show">
+          <div className="toast-content">
+            <div className="message">
+              <span className="check-icon">✓</span>
+              <div>
+                <span className="text-1">Success!</span>
+                <span className="text-2">Charity added to donations!</span>
+              </div>
+            </div>
+            <button className="close-btn" onClick={() => setShowErrorToast(false)}>
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default Charity;

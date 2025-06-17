@@ -40,11 +40,14 @@ import Catogery from "./components/Catogery";
 import CartButton from "./components/CartButton";
 import Complaint from "./components/Complaints";
 import Advices from "./components/advices";
+import Checkout from "./components/Checkout";
+import Subscribe from "./components/Seller/Subscribe";
+import DashboardAdmin from "./components/DashboardAdmin";
 
 function App() {
   const location = useLocation();
   const roleName = useSelector((state) => state.auth.roleName);
-  const showBarSidePaths = ["/", "/dashboard"];
+  const showBarSidePaths = ["/"];
   const showNavbar = !["/login", "/register", "/weclome"].includes(
     location.pathname
   );
@@ -58,6 +61,9 @@ function App() {
         <Route path="/weclome" element={<Welcome />} />
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/advices" element={<Advices />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/subscribe" element={<Subscribe />} />
+        
         <Route
           path="/*"
           element={
@@ -82,17 +88,32 @@ function App() {
                     }`}
                   >
                     <Routes>
-                      {roleName === "seller" && (
+                      {(roleName === "seller" ) && (
                         <>
                           <Route path="/dashboard" element={<Dashboard />} />
                         </>
                       )}
 
-                      <Route path="/home" element={<Home />} />
+                      {(roleName === "admin" ) && (
+                        <>
+                          <Route path="/DashboardAdmin" element={<DashboardAdmin />} />
+                        </>
+                      )}
+                      
+
+                      {roleName === "buyer" && (
+                        <>
+                          <Route path="/cart" element={<Cart />} />
+                          <Route path="/home" element={<Home />} />
+                        </>
+                      )}
+                   
                       <Route path="/products" element={<Products />} />
                       <Route path="/advices" element={<Advices />} />
                       <Route path="/orders" element={<Orders />} />
                       <Route path="/login" element={<Login />} />
+                    
+                      
 
                       <Route
                         path="/AddProToOrder"
@@ -129,8 +150,9 @@ function App() {
                         element={<ViewBillsBuyer />}
                       />
                       <Route path="/D/:DId" element={<DetailsProduct />} />
-                      <Route path="/cart" element={<Cart />} />
+                      
                       <Route path="/profile" element={<Profile />} />
+                      
                       <Route
                         path="/profileSeller"
                         element={<ProfileSeller />}
@@ -139,6 +161,9 @@ function App() {
                       <Route path="/complaint" element={<Complaint />} />
                       <Route path="/Discounts" element={<Discounts />} />
                       <Route path="/CartButton" element={<CartButton />} />
+                      <Route path="/CartButton" element={<Checkout/>} />
+                      <Route path="/subscribe" element={<Subscribe />} />
+                    
                     </Routes>
                   </div>
                 </div>
@@ -148,6 +173,7 @@ function App() {
         />
       </Routes>
       <Footer />
+      
     </div>
   );
 }

@@ -4,6 +4,8 @@
   margin: 0 auto;
   padding: 20px;
   position: relative;
+  overflow: scroll;
+  
 }
 
 .products-header {
@@ -401,6 +403,9 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
+  
+  
+  
 }
 
 .cart-header {
@@ -409,11 +414,13 @@
   align-items: center;
   padding: 20px;
   border-bottom: 1px solid #eee;
+  
 }
 
 .cart-header h3 {
   margin: 0;
-  color: #2c3e50;
+  
+  color: white;
 }
 
 .close-cart {
@@ -584,4 +591,79 @@
   .product-card {
     margin-bottom: 20px;
   }
+}
+
+
+
+/* add  */
+
+
+.cart-dropdown {
+  position: fixed;
+  top: 70px;
+  right: 20px;
+  width: 350px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  padding: 15px;
+  transform: translateY(-20px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.cart-dropdown.show {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.close-cart {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+.cart-items-container {
+  margin-bottom: 15px;
+}
+
+.cart-item {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.cart-item-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.cart-footer {
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+/* Add this to make sure dropdown appears above content */
+.products-container {
+  position: relative;
 }

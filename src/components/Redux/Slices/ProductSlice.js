@@ -58,7 +58,7 @@ export const productSlice = createSlice({
 });
 
 // Export the async thunks for use in components
-export const { } = productSlice.actions;
+// export const { } = productSlice.actions;
 
 // Export the reducer for store configuration
 export default productSlice.reducer;

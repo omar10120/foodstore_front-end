@@ -15,6 +15,7 @@ function Login() {
     const { token, roleName } = useSelector((state) => state.auth);
 
     const validateEmail = (email) => {
+        
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
     };
@@ -33,8 +34,9 @@ function Login() {
             navigate('/weclome');
         }
     }, [token, roleName, navigate]);
-
+ 
     const handleLogin = async (e) => {
+        
         e.preventDefault();
 
         if (!validateEmail(email)) {

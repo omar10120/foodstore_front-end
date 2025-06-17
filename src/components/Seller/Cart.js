@@ -1,39 +1,46 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Import axios for API calls
+import axios from "axios";
 import "../css/Cart.css";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function Cart() {
-  const buyerId = 28; // Static buyer ID
-  const [cartItems, setCartItems] = useState([]); // Cart items
-  const [totalPrice, setTotalPrice] = useState(0); // Total price of the cart
-  const [donationItems, setDonationItems] = useState([]); // Donation details
-  const [charities, setCharities] = useState({}); // Charity details
-  const [cartId, setCartId] = useState(null); // State to store cart ID
-  const [isCartEmpty, setIsCartEmpty] = useState(false); // State to track if cart is empty
-  const [error, setError] = useState(null); // State to handle errors
-
+  const [cartItems, setCartItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [donationItems, setDonationItems] = useState([]);
+  const [charities, setCharities] = useState({});
+  const [cartId, setCartId] = useState(null);
+  const [isCartEmpty, setIsCartEmpty] = useState(false);
+  const [error, setError] = useState(null);
+  const token = useSelector((state) => state.auth.token);
+  const navigate = useNavigate();
+  
   // Fetch cart items and calculate total price
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/cart/user/${buyerId}`) // Fetch cart by buyer ID
+      .get(`http://localhost:8080/api/cart/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then((response) => {
         const cart = response.data;
         if (cart && cart.cartId) {
-          setCartId(cart.cartId); // Store cart ID
-          // Once cart is retrieved, fetch cart items
+          setCartId(cart.cartId);
           axios
-            .get(`http://localhost:8080/api/cart-items/${cart.cartId}`)
+            .get(`http://localhost:8080/api/cart-items/${cart.cartId}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            })
             .then((itemsResponse) => {
               const items = itemsResponse.data;
               setCartItems(items);
-
-              // Calculate total price from the fetched items
+              console.log(response);
+              
               const calculatedTotalPrice = items.reduce(
                 (acc, item) => acc + item.price * item.quantity,
                 0
               );
               setTotalPrice(calculatedTotalPrice);
-              setIsCartEmpty(false); // Set cart as not empty
+              setIsCartEmpty(false);
+              console.log(items);
             })
             .catch((error) => {
               console.error("Error fetching cart items:", error);
@@ -45,82 +52,51 @@ function Cart() {
         console.error("Error fetching cart for buyer:", error);
         setError("Failed to fetch cart.");
       });
-  }, [buyerId]);
+  }, [token]);
 
-  // Fetch donation items and charity details
-  useEffect(() => {
+  // Function to remove an item from the cart with API call
+  const removeItemFromCart = (cartItemId, index) => {
     axios
-      .get(`http://localhost:8080/api/cart/user/${buyerId}`) // Fetch cart by buyer ID
-      .then((response) => {
-        const cart = response.data;
-        if (cart && cart.cartId) {
-          // Fetch donation items
-          axios
-            .get(`http://localhost:8080/api/cart-items/donation/${cart.cartId}`)
-            .then((itemsResponse) => {
-              const items = itemsResponse.data;
-              setDonationItems(items);
-
-              // Fetch charity details for each donation item
-              const charityIds = items.map((item) => item.charityId);
-              const uniqueCharityIds = [...new Set(charityIds)]; // Remove duplicates
-
-              // Fetch charity names for all unique charity IDs
-              Promise.all(
-                uniqueCharityIds.map((charityId) =>
-                  axios.get(`http://localhost:8080/api/charities/${charityId}`)
-                )
-              )
-                .then((charityResponses) => {
-                  const charityData = {};
-                  charityResponses.forEach((response) => {
-                    const charity = response.data;
-                    charityData[charity.charityId] = charity.charityName;
-                  });
-                  setCharities(charityData);
-                })
-                .catch((error) => {
-                  console.error("Error fetching charity details:", error);
-                  setError("Failed to fetch charity details.");
-                });
-            })
-            .catch((error) => {
-              console.error("Error fetching donation items:", error);
-              setError("Failed to fetch donation items.");
-            });
+      .delete(`http://localhost:8080/api/cart-items/${cartItemId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(() => {
+        // Update state after successful removal
+        const updatedCartItems = cartItems.filter((_, i) => i !== index);
+        setCartItems(updatedCartItems);
+        
+        // Recalculate total price
+        const newTotalPrice = updatedCartItems.reduce(
+          (acc, item) => acc + item.price * item.quantity,
+          0
+        );
+        setTotalPrice(newTotalPrice);
+        
+        // Update cart empty status if needed
+        if (updatedCartItems.length === 0) {
+          setIsCartEmpty(true);
         }
       })
       .catch((error) => {
-        console.error("Error fetching cart for buyer:", error);
-        setError("Failed to fetch cart.");
+        console.error("Error removing item:", error);
+        setError("Failed to remove item. Please try again.");
       });
-  }, [buyerId]);
-
-  // Function to remove an item from the cart
-  const removeItemFromCart = (index) => {
-    const updatedCartItems = cartItems.filter((_, i) => i !== index);
-    setCartItems(updatedCartItems);
-
-    // Recalculate total price after removal
-    const newTotalPrice = updatedCartItems.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0
-    );
-    setTotalPrice(newTotalPrice);
   };
 
   // Function to clear the cart
   const clearCart = () => {
     if (cartId) {
       axios
-        .delete(`http://localhost:8080/api/cart/${cartId}/clean`)
+        .delete(`http://localhost:8080/api/cart/${cartId}/clean`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
         .then(() => {
-          setCartItems([]); // Clear cart items from state
-          setTotalPrice(0); // Reset total price
-          setDonationItems([]); // Clear donation items
-          setCharities({}); // Reset charities
-          setIsCartEmpty(true); // Set cart as empty
-          alert("Cart cleared successfully!"); // Optional: Notify user
+          setCartItems([]);
+          setTotalPrice(0);
+          setDonationItems([]);
+          setCharities({});
+          setIsCartEmpty(true);
+          alert("Cart cleared successfully!");
         })
         .catch((error) => {
           console.error("Error clearing the cart:", error);
@@ -132,10 +108,9 @@ function Cart() {
   // Render UI based on cart status
   return (
     <div className="container-cart">
-      {error && <div className="alert alert-danger">{error}</div>}{" "}
-      {/* Error message */}
+      {error && <div className="alert alert-danger">{error}</div>}
       {isCartEmpty ? (
-        <div>No items in the cart.</div> // Message when cart is empty
+        <div>No items in the cart.</div>
       ) : (
         <div className="row">
           {/* Items in Cart Section */}
@@ -172,7 +147,7 @@ function Cart() {
                               cursor: "pointer",
                               marginRight: "40px",
                             }}
-                            onClick={() => removeItemFromCart(index)} // Call remove function on click
+                            onClick={() => removeItemFromCart(item.cartItemId, index)}
                           ></i>
                         </div>
                       </div>
@@ -196,7 +171,13 @@ function Cart() {
                 <p style={{ marginLeft: "10px" }}>
                   Final Price: {totalPrice} $
                 </p>
-                <button className="btn-buy">Buy</button>
+                <button className="btn-buy" onClick={()=> navigate("/Checkout")}>Buy</button>
+                
+
+                
+
+                
+                
                 {/* Clear Cart Button */}
                 <button
                   className="btn-clear"

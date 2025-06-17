@@ -1,36 +1,74 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+// import "./css/Dashboard.css";
 import "./css/Dashborad.css";
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
+  ResponsiveContainer
 } from "recharts";
-import Modal from "react-bootstrap/Modal";
-import { color } from "framer-motion";
+import { FiBox, FiMail, FiUser, FiDollarSign, FiPackage, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { BiCategory } from "react-icons/bi";
 
 function Dashboard() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [recipient, setRecipient] = useState("");
   const [message, setMessage] = useState("");
-  const products = () => {
+  const [products, setProducts] = useState([]);
+  const [sellerInfo, setSellerInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch products data from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8080/api/products/seller', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        
+        const data = await response.json();
+        setProducts(data);
+        if (data.length > 0) {
+          setSellerInfo(data[0].sellerId);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  const productsPage = () => {
     navigate("/ProductSellers");
   };
-  const profileSller = () => {
+
+  const profileSeller = () => {
     navigate("/ProfileSeller");
   };
+
   const handleSendMessage = () => {
     if (navigator.onLine) {
       console.log("Sending message to:", recipient, "Message:", message);
     } else {
       const newMessage = { recipient, message, timestamp: new Date() };
-      const storedMessages =
-        JSON.parse(localStorage.getItem("unreadMessages")) || [];
+      const storedMessages = JSON.parse(localStorage.getItem("unreadMessages")) || [];
       storedMessages.push(newMessage);
       localStorage.setItem("unreadMessages", JSON.stringify(storedMessages));
       console.log("Message saved locally due to no internet connection.");
@@ -40,8 +78,7 @@ function Dashboard() {
 
   useEffect(() => {
     const handleOnline = () => {
-      const storedMessages =
-        JSON.parse(localStorage.getItem("unreadMessages")) || [];
+      const storedMessages = JSON.parse(localStorage.getItem("unreadMessages")) || [];
       storedMessages.forEach((msg) => {
         console.log("Sending locally saved message:", msg);
       });
@@ -54,204 +91,275 @@ function Dashboard() {
     };
   }, []);
 
-  const data = [
-    { date: "2023-12-01", price: -1.05 },
-    { date: "2023-12-02", price: -1.07 },
-    { date: "2023-12-03", price: -2.0 },
-    { date: "2023-12-04", price: 1.08 },
-    { date: "2023-12-05", price: -2.0 },
-    { date: "2023-12-06", price: 1.1 },
-  ];
+  // Prepare data for the chart
+  const chartData = products.map(product => ({
+    name: product.productName.substring(0, 10) + (product.productName.length > 10 ? '...' : ''),
+    price: product.productPrice,
+    quantity: product.quantity,
+  }));
+
+  // Calculate stats
+  const totalProducts = products.length;
+  const availableProducts = products.filter(p => p.availabilityStatus).length;
+  const outOfStockProducts = totalProducts - availableProducts;
+  const totalRevenue = sellerInfo?.revenue || 0;
+
+  // Format currency
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'SYP',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return (
+      <main className="dashboard-container">
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Loading dashboard data...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="dashboard-container">
+        <div className="error-alert">
+          <strong>Error loading data:</strong> {error}
+        </div>
+      </main>
+    );
+  }
 
   return (
-    <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-      <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1
-          className="h2"
-          style={{ marginLeft: "-300px", marginTop: "20px", color: "blue" }}
-        >
-          Dashboard
-        </h1>
-        <div
-          className="btn-toolbar mb-2 mb-md-0"
-          style={{ fontSize: "0.1rem", padding: "0.5rem 0.5rem" }}
-        >
-          <div className="btn-group me-2">
-            <button type="button" className="btn btn-sm btn-outline-secondary">
-              Share
-            </button>
-            <button type="button" className="btn btn-sm btn-outline-secondary">
-              Export
-            </button>
-          </div>
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1"
-            style={{ height: "30px", width: "195px" }}
-          >
-            <svg className="bi">
-              <use xlinkHref="#calendar3"></use>
-            </svg>
-            This week
+    <main className="dashboard-container">
+      <div className="dashboard-header">
+        <h1>Seller Dashboard</h1>
+        <div className="header-actions">
+          <button type="button" className="btn-export">
+            <FiDollarSign />
+            Export Report
           </button>
         </div>
       </div>
-      <div className="seller_BreAkar"></div>
-      {/* 
-      <div className="line-chart-container">
-        <LineChart width={1000} height={300} data={data} className="line-chart">
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="price" stroke="#8884d8" />
-        </LineChart>
-      </div> */}
 
-      <div className="conatiner_da">
-        <div className="row">
-          <div className="col-12 col-sm-6 col-md-4 mb-4">
-            <div
-              className="card_por1"
-              style={{ position: "relative" }}
-              onClick={products}
+      {/* Stats Cards */}
+      <div className="stats-grid">
+        <div className="stat-card stat-revenue">
+          <div className="stat-content">
+            <div className="stat-label">Total Revenue</div>
+            <div className="stat-value">{formatCurrency(totalRevenue)}</div>
+          </div>
+          <FiDollarSign className="stat-icon" />
+        </div>
+
+        <div className="stat-card stat-products">
+          <div className="stat-content">
+            <div className="stat-label">Total Products</div>
+            <div className="stat-value">{totalProducts}</div>
+          </div>
+          <FiPackage className="stat-icon" />
+        </div>
+
+        <div className="stat-card stat-available">
+          <div className="stat-content">
+            <div className="stat-label">Available Products</div>
+            <div className="stat-value">{availableProducts}</div>
+          </div>
+          <FiCheckCircle className="stat-icon" />
+        </div>
+
+        <div className="stat-card stat-outofstock">
+          <div className="stat-content">
+            <div className="stat-label">Out of Stock</div>
+            <div className="stat-value">{outOfStockProducts}</div>
+          </div>
+          <FiXCircle className="stat-icon" />
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div className="chart-container">
+        <div className="chart-header">
+          <h2>Product Prices & Quantities</h2>
+        </div>
+        <div className="chart-body">
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
             >
-              <i
-                className="bi bi-basket"
-                style={{
-                  fontSize: "130px",
-                  position: "absolute",
-                  left: "30px",
-                  top: "-30px",
-                  color: "blue",
-                }}
-              ></i>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+              <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+              <Tooltip formatter={(value) => value.toLocaleString()} />
+              <Legend />
+              <Bar yAxisId="left" dataKey="price" name="Price (SYP)" fill="#8884d8" />
+              <Bar yAxisId="right" dataKey="quantity" name="Quantity" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="actions-container">
+        <div className="actions-header">
+          <h2>Quick Actions</h2>
+        </div>
+        <div className="actions-grid">
+          <div className="action-card" onClick={productsPage}>
+            <div className="action-content">
+              <FiBox className="action-icon" />
+              <h3>Manage Products</h3>
+              <p>View and edit your product listings</p>
             </div>
-            <div
-              className="card_cont"
-              style={{ position: "relative" }}
-              onClick={() => setShowModal(true)}
-            >
-              <i
-                className="bi bi-envelope-at"
-                style={{
-                  fontSize: "130px",
-                  position: "absolute",
-                  left: "30px",
-                  top: "-30px",
-                  color: "blue",
-                }}
-              ></i>
+          </div>
+          
+          <div className="action-card" onClick={() => setShowModal(true)}>
+            <div className="action-content">
+              <FiMail className="action-icon" />
+              <h3>Messages</h3>
+              <p>Contact customers and support</p>
             </div>
-            <div
-              className="card_file"
-              style={{ position: "relative" }}
-              onClick={profileSller}
-            >
-              <i
-                className="bi bi-person"
-                style={{
-                  fontSize: "130px",
-                  position: "absolute",
-                  left: "40px",
-                  top: "-30px",
-                  color: "blue",
-                }}
-              ></i>
+          </div>
+          
+          <div className="action-card" onClick={profileSeller}>
+            <div className="action-content">
+              <FiUser className="action-icon" />
+              <h3>Profile</h3>
+              <p>Manage your seller profile</p>
             </div>
           </div>
         </div>
       </div>
 
-      <h2 style={{ marginLeft: "-510px", color: "blue" }}>Bills</h2>
-      <div className="table-responsive" style={{ marginLeft: "-370px" }}>
-        <table className="table table-striped table-sm">
-          <thead>
-            <tr>
-              <th scope="col" style={{ color: "blue" }}>
-                ID
-              </th>
-              <th scope="col" style={{ color: "blue" }}>
-                UserID
-              </th>
-              <th scope="col" style={{ color: "blue" }}>
-                ProductID
-              </th>
-              <th scope="col" style={{ color: "blue" }}>
-                Amount
-              </th>
-              <th scope="col" style={{ color: "blue" }}>
-                Price
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: 15 }, (_, index) => (
-              <tr key={index + 1001}>
-                <td>{index + 1001}</td>
-                <td>random</td>
-                <td>data</td>
-                <td>placeholder</td>
-                <td>text</td>
+      {/* Products Table */}
+      <div className="products-container">
+        <div className="products-header">
+          <h2>Your Products</h2>
+        </div>
+        <div className="table-container">
+          <table className="products-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Expiry Date</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {products.map(product => (
+                <tr key={product.productId}>
+                  <td>
+                    <div className="product-info">
+                      <div 
+                        className="product-image"
+                        style={{ 
+                          backgroundImage: `url(${product.imagePath})`,
+                        }}
+                      />
+                      <div className="product-details">
+                        <div className="product-name">{product.productName}</div>
+                        <div className="product-description">{product.productDescription.substring(0, 50)}...</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span className="category-badge">
+                      <BiCategory /> 
+                      {product.categoryId.categoriesName}
+                    </span>
+                  </td>
+                  <td className="product-price">{formatCurrency(product.productPrice)}</td>
+                  <td>{product.quantity}</td>
+                  <td>{formatDate(product.expiryDate)}</td>
+                  <td>
+                    {product.availabilityStatus ? (
+                      <span className="status-badge available">Available</span>
+                    ) : (
+                      <span className="status-badge outofstock">Out of Stock</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        aria-labelledby="modalLabel"
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="modalLabel">New message</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <form>
-            <div className="mb-3">
-              <label htmlFor="recipient-name" className="col-form-label">
-                Recipient:
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="recipient-name"
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-              />
+      {/* Message Modal */}
+      {showModal && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>New Message</h2>
+              <button className="modal-close" onClick={() => setShowModal(false)}>
+                &times;
+              </button>
             </div>
-            <div className="mb-3">
-              <label htmlFor="message-text" className="col-form-label">
-                Message:
-              </label>
-              <textarea
-                className="form-control"
-                id="message-text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
+            <div className="modal-body">
+              <form>
+                <div className="form-group">
+                  <label htmlFor="recipient-name">Recipient:</label>
+                  <input
+                    type="text"
+                    id="recipient-name"
+                    value={recipient}
+                    onChange={(e) => setRecipient(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="message-text">Message:</label>
+                  <textarea
+                    id="message-text"
+                    rows="4"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                </div>
+              </form>
             </div>
-          </form>
-        </Modal.Body>
-        <Modal.Footer>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleSendMessage}
-          >
-            Send message
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => setShowModal(false)}
-          >
-            Close
-          </button>
-        </Modal.Footer>
-      </Modal>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={() => setShowModal(false)}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="btn-send"
+                onClick={handleSendMessage}
+              >
+                Send Message
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

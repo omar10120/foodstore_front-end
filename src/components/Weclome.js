@@ -10,7 +10,11 @@ function Welcome() {
     const handleStartShopping = () => {
         if (token && userRole === 'seller') {
             navigate('/dashboard');
-        } else {
+        }
+        else if(token && userRole ==='admin'){
+            navigate('/dashboardadmin');
+        }
+         else {
             navigate('/home');
         }
     };

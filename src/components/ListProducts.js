@@ -23,7 +23,7 @@ function ListProducts() {
                 
                 const data = await response.json();
                 setProductsArray(data);
-                if (data.length == 0) {
+                if (data.length === 0) {
                     throw new Error("no products found");
                 }
                 
@@ -78,7 +78,7 @@ function ListProducts() {
           
              </div>
 
-            <div className="pagination" style={{ marginLeft: "450px" }}>
+            {/* <div className="pagination" style={{ marginLeft: "450px" }}>
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
@@ -106,7 +106,7 @@ function ListProducts() {
                 >
                     Next
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 }
