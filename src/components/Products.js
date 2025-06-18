@@ -22,7 +22,15 @@ function Products() {
   const [cartId, setCartId] = useState(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState(false);
   
-  // Ref for dropdown to detect outside clicks
+  // Review states
+  const [expandedProductId, setExpandedProductId] = useState(null);
+  const [reviews, setReviews] = useState({});
+  const [newReview, setNewReview] = useState({
+    rating: 5,
+    comment: ""
+  });
+  const [loadingReviews, setLoadingReviews] = useState({});
+  
   const dropdownRef = useRef(null);
 
   // Fetch products
@@ -53,11 +61,8 @@ function Products() {
         
         const cart = cartResponse.data;
         if (cart && cart.cartId) {
-          
           setCartId(cart.cartId);
           setSubscriptionStatus(cart.user.subscriptionStatus);
-
-
 
           const itemsResponse = await axios.get(
             `http://localhost:8080/api/cart-items/${cart.cartId}`,
@@ -89,7 +94,6 @@ function Products() {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside dropdown and not on cart button
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         const cartButton = document.querySelector('.cart-button');
         if (cartButton && !cartButton.contains(event.target)) {
@@ -226,6 +230,71 @@ function Products() {
     setQuantities(prev => ({ ...prev, [productId]: numValue }));
   };
 
+  // Function to fetch reviews for a seller
+  const fetchReviews = async (sellerId) => {
+    try {
+      setLoadingReviews(prev => ({ ...prev, [sellerId]: true }));
+      const response = await axios.get(
+        `http://localhost:8080/reviews/seller/${sellerId}/details`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setReviews(prev => ({ ...prev, [sellerId]: response.data }));
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    } finally {
+      setLoadingReviews(prev => ({ ...prev, [sellerId]: false }));
+    }
+  };
+
+  // Function to submit a new review
+  const submitReview = async (product) => {
+    if (!token) {
+      alert("Please login to submit a review");
+      return;
+    }
+    
+    try {
+      await axios.post(
+        'http://localhost:8080/reviews',
+        {
+          sellerId: product.sellerId.userId,
+          productId: product.productId,
+          rating: newReview.rating,
+          comment: newReview.comment
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      // Refresh reviews
+      await fetchReviews(product.sellerId.userId);
+      
+      // Reset form
+      setNewReview({
+        rating: 5,
+        comment: ""
+      });
+      
+      alert("Review submitted successfully!");
+      setExpandedProductId(null);
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert("Failed to submit review: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  // Toggle reviews visibility
+  const toggleReviews = (product) => {
+    const sellerId = product.sellerId.userId;
+    if (expandedProductId === product.productId) {
+      setExpandedProductId(null);
+    } else {
+      setExpandedProductId(product.productId);
+      if (!reviews[sellerId]) {
+        fetchReviews(sellerId);
+      }
+    }
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -352,97 +421,204 @@ function Products() {
 
       <div className="products-grid">
         {uniqueProducts.length > 0 ? (
-          uniqueProducts.map((product) => (
-            <div key={product.productId} className="product-card">
-              <div className="product-image-container">
-                {product.imagePath ? (
-                  <img
-                    src={product.imagePath}
-                    alt={product.productName}
-                    className="product-image"
-                  />
-                ) : (
-                  <div className="product-image-placeholder">
-                    <div className="placeholder-icon">📦</div>
-                    <p>No Image Available</p>
-                  </div>
-                )}
-                {!product.availabilityStatus && (
-                  <div className="out-of-stock-badge">Out of Stock</div>
-                )}
-                <div className="product-category">
-                  {product.categoryId?.categoriesName || "Uncategorized"}
-                </div>
-              </div>
-              <div className="product-details">
-                <h3 className="product-name">{product.productName}</h3>
-                <p className="product-description">
-                  {product.productDescription}
-                </p>
-                <div className="product-meta">
-                  <div className="product-price-container">
-                    <span className="product-price">
-                      ${product.productPrice.toFixed(2)}
-                    </span>
-                    <span className="product-expiry">
-                      Expires: {new Date(product.expiryDate).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="product-stock-container">
-                    <span
-                      className={`product-status ${
-                        product.availabilityStatus ? "in-stock" : "out-of-stock"
-                      }`}
-                    >
-                      {product.availabilityStatus
-                        ? `In Stock (${product.quantity})`
-                        : "Out of Stock"}
-                    </span>
-                  </div>
-                </div>
-                <div className="product-actions">
-                  <div className="quantity-selector">
-                    <label>Qty:</label>
-                    <input
-                      type="number"
-                      min="1"
-                      max={product.quantity}
-                      value={quantities[product.productId] || 1}
-                      onChange={(e) => 
-                        handleQuantityChange(product.productId, e.target.value)
-                      }
-                      className="quantity-input"
-                      disabled={!product.availabilityStatus}
+          uniqueProducts.map((product) => {
+            const sellerId = product.sellerId.userId;
+            const productReviews = reviews[sellerId]?.reviews || [];
+            const averageRating = reviews[sellerId]?.averageRating || 0;
+            
+            // Filter reviews for this specific product
+            const filteredReviews = productReviews.filter(
+              review => review.product?.productId === product.productId
+            );
+            
+            return (
+              <div key={product.productId} className="product-card">
+                <div className="product-image-container">
+                  {product.imagePath ? (
+                    <img
+                      src={product.imagePath}
+                      alt={product.productName}
+                      className="product-image"
                     />
+                  ) : (
+                    <div className="product-image-placeholder">
+                      <div className="placeholder-icon">📦</div>
+                      <p>No Image Available</p>
+                    </div>
+                  )}
+                  {!product.availabilityStatus && (
+                    <div className="out-of-stock-badge">Out of Stock</div>
+                  )}
+                  <div className="product-category">
+                    {product.categoryId?.categoriesName || "Uncategorized"}
                   </div>
-                  <div className="action-buttons">
-                    <button
-                      className="add-to-cart-button"
-                      onClick={() => addProduct(product)}
-                      disabled={!product.availabilityStatus}
-                    >
-                      <span className="button-icon">🛒</span> Add to Cart
-                    </button>
-                    <div className="secondary-actions">
-                      <button
-                        className="details-button"
-                        onClick={() => details(product)}
+                </div>
+                <div className="product-details">
+                  <h3 className="product-name">{product.productName}</h3>
+                  <p className="product-description">
+                    {product.productDescription}
+                  </p>
+                  <div className="product-meta">
+                    <div className="product-price-container">
+                      <span className="product-price">
+                        ${product.productPrice.toFixed(2)}
+                      </span>
+                      <span className="product-expiry">
+                        Expires: {new Date(product.expiryDate).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="product-stock-container">
+                      <span
+                        className={`product-status ${
+                          product.availabilityStatus ? "in-stock" : "out-of-stock"
+                        }`}
                       >
-                        Details
-                      </button>
-                      <button
-                        className="donate-button"
-                        onClick={() => donate(product)}
-                        disabled={!product.availabilityStatus}
-                      >
-                        Donate
-                      </button>
+                        {product.availabilityStatus
+                          ? `In Stock (${product.quantity})`
+                          : "Out of Stock"}
+                      </span>
                     </div>
                   </div>
+                  <div className="product-actions">
+                    <div className="quantity-selector">
+                      <label>Qty:</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max={product.quantity}
+                        value={quantities[product.productId] || 1}
+                        onChange={(e) => 
+                          handleQuantityChange(product.productId, e.target.value)
+                        }
+                        className="quantity-input"
+                        disabled={!product.availabilityStatus}
+                      />
+                    </div>
+                    <div className="action-buttons">
+                      <button
+                        className="add-to-cart-button"
+                        onClick={() => addProduct(product)}
+                        disabled={!product.availabilityStatus}
+                      >
+                        <span className="button-icon">🛒</span> Add to Cart
+                      </button>
+                      <div className="secondary-actions">
+                        <button
+                          className="details-button"
+                          onClick={() => details(product)}
+                        >
+                          Details
+                        </button>
+                        <button
+                          className="donate-button"
+                          onClick={() => donate(product)}
+                          disabled={!product.availabilityStatus}
+                        >
+                          Donate
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Reviews Button */}
+                  <button
+                    className="reviews-button"
+                    onClick={() => toggleReviews(product)}
+                  >
+                    {expandedProductId === product.productId ? 
+                      "Hide Reviews" : `Reviews (${filteredReviews.length})`}
+                  </button>
+                  
+                  {/* Reviews Section */}
+                  {expandedProductId === product.productId && (
+                    <div className="reviews-section">
+                      <div className="reviews-summary">
+                        <div className="average-rating">
+                          <span className="rating-stars">
+                            {"★".repeat(Math.round(averageRating))}
+                            {"☆".repeat(5 - Math.round(averageRating))}
+                          </span>
+                          <span>{averageRating.toFixed(1)}</span>
+                        </div>
+                        <p>{filteredReviews.length} reviews</p>
+                      </div>
+
+                      {loadingReviews[sellerId] ? (
+                        <div className="reviews-loading">
+                          <div className="spinner"></div>
+                          <p>Loading reviews...</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="reviews-list">
+                            {filteredReviews.length > 0 ? (
+                              filteredReviews.map(review => (
+                                <div key={review.reviewId} className="review-item">
+                                  <div className="review-header">
+                                    <span className="reviewer-name">
+                                      {review.buyer?.userName || "Anonymous"}
+                                    </span>
+                                    <span className="review-rating">
+                                      {"★".repeat(review.rating)}
+                                      {"☆".repeat(5 - review.rating)}
+                                    </span>
+                                    <span className="review-date">
+                                      {new Date(review.createdAt).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  <p className="review-comment">{review.comment}</p>
+                                </div>
+                              ))
+                            ) : (
+                              <p className="no-reviews">No reviews yet for this product</p>
+                            )}
+                          </div>
+
+                          {/* Add Review Form */}
+                          <div className="add-review-form">
+                            <h4>Add Your Review</h4>
+                            <div className="rating-input">
+                              <label>Rating:</label>
+                              <select
+                                value={newReview.rating}
+                                onChange={(e) => setNewReview({
+                                  ...newReview,
+                                  rating: parseInt(e.target.value)
+                                })}
+                              >
+                                {[1, 2, 3, 4, 5].map(num => (
+                                  <option key={num} value={num}>
+                                    {num} ★
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                            <div className="comment-input">
+                              <label>Comment:</label>
+                              <textarea
+                                value={newReview.comment}
+                                onChange={(e) => setNewReview({
+                                  ...newReview,
+                                  comment: e.target.value
+                                })}
+                                placeholder="Share your experience with this product..."
+                              />
+                            </div>
+                            <button
+                              className="submit-review-button"
+                              onClick={() => submitReview(product)}
+                            >
+                              Submit Review
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="no-products-message">
             <div className="empty-state">

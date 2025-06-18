@@ -16,10 +16,61 @@ function DetailsProduct() {
     const navigate = useNavigate();
     const { productId } = useParams();
     const token = useSelector((state) => state.auth.token);
+    const [subscriptionStatus, setSubscriptionStatus] = useState(false);
+    useEffect(() => {
+        const source = axios.CancelToken.source();
+        let isMounted = true;
+        
+        const fetchUserData = async () => {
+          try {
+            const response = await axios.get(
+              "http://localhost:8080/api/users/me", 
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+
+            // const cart = response.data;
+            
+                if(response.status == "200")
+                setSubscriptionStatus(response.data.subscriptionStatus);
+                
+            
+          } catch (err) {
+            if (isMounted) {
+              setErrorMessage(axios.isCancel(err) 
+                ? "Request canceled" 
+                : err.response?.data || err.message
+              );
+            }
+          } finally {
+            // if (isMounted) setLoading(false);
+          }
+        };
+    
+        if (token) {
+          fetchUserData();
+        } else {
+            setErrorMessage("No authentication token found");
+    
+        }
+    
+        return () => {
+          isMounted = false;
+          source.cancel("Component unmounted, canceling request");
+        };
+    }, [token]);
     useEffect(() => {
         const fetchProduct = async () => {
+            var baseurl;
             try {
-                const response = await axios.get(`http://localhost:8080/api/products`);
+                if (subscriptionStatus)
+                     baseurl = "http://localhost:8080/api/products/nearby"
+                else
+                     baseurl = "http://localhost:8080/api/products"
+                const response = await axios.get(baseurl,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
                 const foundProduct = response.data.find(p => p.productId == productId);
                 
                 if (foundProduct) {

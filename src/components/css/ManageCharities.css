@@ -1,0 +1,63 @@
+/* Charities Management Styles */
+.manage-charities {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  }
+  
+  .charity-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .charity-name {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 5px;
+  }
+  
+  .charity-id {
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+  
+  .charity-description {
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.4;
+    max-height: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+  
+  .no-charities {
+    text-align: center;
+    padding: 30px;
+  }
+  
+  .no-charities-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .no-charities-content p {
+    color: #64748b;
+    margin-bottom: 10px;
+  }
+  
+  .no-charities-content button {
+    background: #38bdf8;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  /* Reuse existing modal, form, and pagination styles */

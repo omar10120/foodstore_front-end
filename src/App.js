@@ -43,6 +43,7 @@ import Advices from "./components/advices";
 import Checkout from "./components/Checkout";
 import Subscribe from "./components/Seller/Subscribe";
 import DashboardAdmin from "./components/DashboardAdmin";
+import VerifyEmail from "./components/VerifyEmail";
 
 function App() {
   const location = useLocation();
@@ -63,6 +64,7 @@ function App() {
         <Route path="/advices" element={<Advices />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/subscribe" element={<Subscribe />} />
+        <Route path="/VerifyEmail" element={<VerifyEmail />} />
         
         <Route
           path="/*"

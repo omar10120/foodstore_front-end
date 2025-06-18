@@ -22,6 +22,8 @@ function Register() {
   });
 
   const handleShowToast = (message, type) => {
+
+    
     setToastMessage(message);
     setToastType(type);
     setShowToast(true);
@@ -34,6 +36,7 @@ function Register() {
   };
 
   const submit = async (e) => {
+    
     e.preventDefault();
     try {
       const response = await axios.post(
@@ -52,7 +55,7 @@ function Register() {
         address: "",
       });
       setActiveRole(null);
-      navigate("/login");
+      navigate("/VerifyEmail", { state: { email: register.email } });
     } catch (error) {
       console.error("Registration failed:", error);
       handleShowToast(

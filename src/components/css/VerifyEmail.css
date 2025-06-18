@@ -1,0 +1,180 @@
+.verify-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f7fa;
+    padding: 20px;
+  }
+  
+  .verify-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    width: 100%;
+    max-width: 450px;
+    padding: 40px 30px;
+    text-align: center;
+  }
+  
+  .verify-header {
+    margin-bottom: 30px;
+  }
+  
+  .verify-header h2 {
+    color: #2d3748;
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  
+  .verify-header p {
+    color: #718096;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .verify-form {
+    margin-bottom: 25px;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 16px;
+    text-align: center;
+    letter-spacing: 8px;
+    transition: border-color 0.3s;
+  }
+  
+  .input-group input:focus {
+    border-color: #4299e1;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+  }
+  
+  .error-message {
+    color: #e53e3e;
+    font-size: 14px;
+    margin-top: 8px;
+    text-align: left;
+  }
+  
+  .verify-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .verify-btn:hover {
+    background-color: #3182ce;
+  }
+  
+  .verify-btn:disabled {
+    background-color: #cbd5e0;
+    cursor: not-allowed;
+  }
+  
+  .resend-section {
+    margin-top: 20px;
+  }
+  
+  .resend-section p {
+    color: #718096;
+    margin-bottom: 10px;
+  }
+  
+  .resend-btn {
+    background: none;
+    border: none;
+    color: #4299e1;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+  }
+  
+  .resend-btn:hover:not(:disabled) {
+    background-color: #ebf8ff;
+  }
+  
+  .resend-btn.disabled {
+    color: #a0aec0;
+    cursor: not-allowed;
+  }
+  
+  /* Toast styles (same as register page) */
+  .toast-notification {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  @keyframes slideIn {
+    from { bottom: -50px; opacity: 0; }
+    to { bottom: 30px; opacity: 1; }
+  }
+  
+  .toast-notification.success {
+    border-left: 4px solid #48bb78;
+  }
+  
+  .toast-notification.error {
+    border-left: 4px solid #e53e3e;
+  }
+  
+  .toast-content {
+    display: flex;
+    align-items: center;
+  }
+  
+  .toast-icon {
+    margin-right: 12px;
+    font-size: 20px;
+  }
+  
+  .toast-notification.success .toast-icon {
+    color: #48bb78;
+  }
+  
+  .toast-notification.error .toast-icon {
+    color: #e53e3e;
+  }
+  
+  .toast-message p {
+    margin: 0;
+    font-size: 14px;
+    color: #2d3748;
+  }
+  
+  .toast-close {
+    background: none;
+    border: none;
+    color: #a0aec0;
+    cursor: pointer;
+    margin-left: 20px;
+    font-size: 18px;
+    padding: 0;
+  }

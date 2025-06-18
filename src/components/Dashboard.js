@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import "./css/Dashboard.css";
 import "./css/Dashborad.css";
+import { useSelector } from "react-redux";
 import {
   BarChart,
   Bar,
@@ -27,9 +28,11 @@ function Dashboard() {
 
   // Fetch products data from API
   useEffect(() => {
+    
     const fetchProducts = async () => {
       try {
         const token = localStorage.getItem('token');
+        
         const response = await fetch('http://localhost:8080/api/products/seller', {
           headers: {
             'Authorization': `Bearer ${token}`

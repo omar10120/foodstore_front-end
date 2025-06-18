@@ -80,6 +80,16 @@ function ProductSellers() {
                     Add New Product
                 </Link>
             </div>
+            <div className="text-right mb-3" style={{ fontSize: '16px', padding: '5px 10px', marginLeft: '100px', marginTop: '-10px' }}>
+                <Link 
+                    to="/dashboard" 
+                    className="btn btn-success" 
+                    style={{ fontSize: '16px', padding: '5px 10px', marginLeft: '900px', marginTop: '10px' }}
+                >
+                    <i class="bi bi-arrow-left"></i>
+                    Back to dashboard
+                </Link>
+            </div>
             <h2>Products</h2>
             <div className="table-responsive" style={{ margin: '7px', width: '100%' }}>
                 <table className="table table-striped table-sm">

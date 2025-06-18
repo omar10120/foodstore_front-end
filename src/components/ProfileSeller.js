@@ -196,7 +196,7 @@ function ProfileSeller() {
                 <div className="field-label">Total Revenue</div>
                 <div className="field-value">
                   {userData.revenue !== undefined 
-                    ? `₫${userData.revenue.toLocaleString()}` 
+                    ? `$${userData.revenue.toLocaleString()}` 
                     : "N/A"}
                 </div>
               </div>
@@ -204,11 +204,11 @@ function ProfileSeller() {
           )}
         </div>
 
-        <div className="profile-footer">
+        {/* <div className="profile-footer">
           <button className="edit-profile">
             Edit Profile
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

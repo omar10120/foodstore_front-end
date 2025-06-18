@@ -5,7 +5,8 @@ import {getAdminProfile} from "./admin/adminService";
 import { useDispatch, useSelector } from "react-redux";
 
 import ManageUsers from './admin/ManageUsers'; // Adjust path as needed
-import ManageEvents from './admin/ManageEvents'; // Adjust path as needed
+import ManageEvents from './admin/ManageEvents'; 
+import ManageCharities from './admin/ManageCharities'; 
 
 
 import { 
@@ -316,8 +317,6 @@ function ModerateReviews() {
   return <div className="manage-section"><h2>Moderate Reviews</h2><p>Review moderation content goes here...</p></div>;
 }
 
-function ManageCharities() {
-  return <div className="manage-section"><h2>Manage Charities</h2><p>Charity management content goes here...</p></div>;
-}
+
 
 export default DashboardAdmin;
