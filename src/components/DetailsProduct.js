@@ -20,7 +20,9 @@ function DetailsProduct() {
     const navigate = useNavigate();
     const { productId } = useParams();
     const token = useSelector((state) => state.auth.token);
-    
+    const [showCharityModal, setShowCharityModal] = useState(false);
+    const [charities, setCharities] = useState([]);
+    const [selectedCharity, setSelectedCharity] = useState(null);
     // Fetch user data
     useEffect(() => {
         const source = axios.CancelToken.source();
@@ -61,8 +63,33 @@ function DetailsProduct() {
         };
     }, [token]);
     
+    const handleDonateClick = async () => {
+        if (!inputAmount || inputAmount < 1) {
+          showToast('Please enter a valid amount', 'error');
+          return;
+        }
+        
+        await fetchCharities();
+        setShowCharityModal(true);
+      };
+    const fetchCharities = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/api/charities', 
+            {headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            } }
+        );
+          setCharities(response.data);
+        } catch (error) {
+          console.error('Error fetching charities:', error);
+          showToast('Failed to load charities', 'error');
+        }
+      };
     // Fetch product data
     useEffect(() => {
+
+        
         const fetchProduct = async () => {
             try {
                 const baseurl = subscriptionStatus 
@@ -195,36 +222,60 @@ function DetailsProduct() {
     };
 
     // Donate product
-    const donateProduct = async () => {
-        if (!inputAmount || inputAmount < 1) {
-            setShowErrorToast(true);
-            showToast('Please enter a valid amount', 'error');
-            return;
-        }
+    // const donateProduct = async () => {
+    //     if (!inputAmount || inputAmount < 1) {
+    //         setShowErrorToast(true);
+    //         showToast('Please enter a valid amount', 'error');
+    //         return;
+    //     }
     
+    //     try {
+    //         await axios.post(
+    //             'http://localhost:8080/api/cart-items/donate',
+    //             {
+    //                 productId,
+    //                 quantity: inputAmount,
+    //                 charityId: 3,
+    //             },
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                     "Content-Type": "application/json"
+    //                 }
+    //             }
+    //         );
+    //         showToast('Product donated successfully!', 'success');
+    //         // navigate('/charity');    
+    //     } catch (error) {
+    //         console.error('Error donating product:', error);
+    //         setErrorMessage('Failed to donate the product.');
+    //         showToast('Failed to donate product', 'error');
+    //     }
+    // };
+    const donateProduct = async (charityId) => {
         try {
-            await axios.post(
-                'http://localhost:8080/api/cart-items/donate',
-                {
-                    productId,
-                    quantity: inputAmount,
-                    charityId: 3,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                }
-            );
-            showToast('Product donated successfully!', 'success');
-            // navigate('/charity');    
+          await axios.post(
+            'http://localhost:8080/api/cart-items/donate',
+            { productId, quantity: inputAmount, charityId },
+            { headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            } }
+          );
+          showToast('Product donated successfully!', 'success');
+          setmessage('Product donated successfully!', 'success')
+          setTimeout(() => {
+            setmessage(null)
+        }, 2500)
         } catch (error) {
-            console.error('Error donating product:', error);
-            setErrorMessage('Failed to donate the product.');
-            showToast('Failed to donate product', 'error');
+          
+          showToast('Failed to donate product', 'error');
+          setmessage('Failed to donate product', 'error')
+          setTimeout(() => {
+            setmessage(null)
+        }, 2500)
         }
-    };
+      };
 
     // Modern toast system
     const showToast = (message, type) => {
@@ -260,11 +311,48 @@ function DetailsProduct() {
     return (
         <div className="details-page">
             {/* Product Details Section */}
-       
+            {showCharityModal && (
+                <div className="charity-modal">
+                    <div className="modal-content">
+                    <h2>Select a Charity</h2>
+                    <div className="charities-list">
+                        {charities.map(charity => (
+                        <div 
+                            key={charity.charityId}
+                            className={`charity-card ${selectedCharity?.charityId === charity.charityId ? 'selected' : ''}`}
+                            onClick={() => setSelectedCharity(charity)}
+                        >
+                            <h3>{charity.charityName}</h3>
+                            <p>{charity.charityDescription}</p>
+                            <div className="charity-info">{charity.charityInfo}</div>
+                        </div>
+                        ))}
+                    </div>
+                    <div className="modal-actions">
+                        <button 
+                        className="btn secondary-btn"
+                        onClick={() => setShowCharityModal(false)}
+                        >
+                        Cancel
+                        </button>
+                        <button 
+                        className="btn primary-btn"
+                        disabled={!selectedCharity}
+                        onClick={() => {
+                            setShowCharityModal(false);
+                            donateProduct(selectedCharity.charityId);
+                        }}
+                        >
+                        Confirm Donation
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            )}
             <div className="product-details-container">
                 <div className="product-image-container">
                     <img 
-                        src={product.imagePath} 
+                        src={"http://localhost:8080"+product.imagePath}
                         alt={product.productName} 
                         className="product-image"
                     />
@@ -369,11 +457,11 @@ function DetailsProduct() {
                                       {message}
                                 </div>
                                 )}
-                                <button 
-                                    className="btn secondary-btn"
-                                    onClick={donateProduct}
+                               <button 
+                                className="btn secondary-btn"
+                                onClick={handleDonateClick}
                                 >
-                                    <i className="bi bi-gift"></i> Donate
+                                 <i className="bi bi-gift"></i> Donate
                                 </button>
                                 <button 
                                     className="btn secondary-btn"
@@ -381,6 +469,7 @@ function DetailsProduct() {
                                 >
                                     <i className="bi bi-cart"></i> Checkout
                                 </button>
+                                
                             </div>
                         </div>
                     )}
