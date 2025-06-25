@@ -105,9 +105,12 @@
   font-size: 0.9rem;
 }
 
-.product-details {
+.product-details-products {
+
   padding: 20px;
+  
   flex-grow: 1;
+  
   display: flex;
   flex-direction: column;
 }
@@ -272,12 +275,9 @@
 /* Toast Styles */
 .toast-container {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
 }
 
 .toast {
@@ -289,17 +289,6 @@
   padding: 15px 20px;
   animation: slideIn 0.3s ease-out;
   border-left: 5px solid #27ae60;
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  padding: 12px 16px;
-  min-width: 250px;
-  animation: slideIn 0.3s ease-out;
-  border-left: 4px solid;
-  transform: translateX(0);
-  transition: transform 0.3s ease;
 }
 
 @keyframes slideIn {
@@ -417,6 +406,9 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
+
+  
+
   
   
   
@@ -604,6 +596,7 @@
   
   .product-card {
     margin-bottom: 20px;
+    
   }
 }
 
@@ -616,8 +609,8 @@
   position: fixed;
   top: 70px;
   right: 20px;
-  width: 350px;
-  max-height: 70vh;
+  width: 450px;
+  max-height: 80vh;
   overflow-y: auto;
   background-color: white;
   border: 1px solid #ddd;
@@ -635,6 +628,10 @@
   transform: translateY(0);
   opacity: 1;
   visibility: visible;
+
+  
+  
+
 }
 
 .cart-header {
@@ -822,549 +819,115 @@
 .reviews-button:hover {
   background-color: #e0e0e0;
 }
+.reviews-button:disabled ,.details-button:disabled{
+  background: #bdc3c7;
+  cursor: not-allowed;
+  color: white;
+}
 
 
-/* Modern Toast */
-.toast-container {
+
+/* Add to Product.css */
+.products-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+}
+
+.products-header {
+  text-align: center;
+  margin: 30px 0 40px;
+  padding: 20px;
+}
+
+.products-header h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.products-header p {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.product-card-wrapper {
+  position: relative;
+}
+
+/* Fix cart manager positioning */
+.cart-manager {
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.toast {
-  display: flex;
-  align-items: center;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  padding: 12px 16px;
-  min-width: 250px;
-  animation: slideIn 0.3s ease-out;
-  border-left: 4px solid;
-  transform: translateX(0);
-  transition: transform 0.3s ease;
-}
-
-.toast-success {
-  border-left-color: #4CAF50;
-}
-
-.toast-error {
-  border-left-color: #f44336;
-}
-
-.toast-info {
-  border-left-color: #2196F3;
-}
-
-.toast-icon {
-  font-size: 20px;
-  margin-right: 12px;
-}
-
-.toast-content {
-  flex: 1;
-}
-
-.toast-content p {
-  margin: 0;
-  font-size: 14px;
-  color: #333;
-}
-
-.toast-close {
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  color: #999;
-  padding: 0;
-  margin-left: 10px;
-}
-
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0,0,0,0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(3px);
+}
+
+.product-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.product-image-container {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+
+/* ... rest of your CSS remains the same ... */
+
+/* Cart Dropdown Styles - Fix positioning */
+.cart-dropdown {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0,0,0,0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000
-}
-
-.modal {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  animation: modalAppear 0.3s ease-out;
-    position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: rgba(0,0,0,0.7);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000
-}
-
-@keyframes modalAppear {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.modal-header {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: #333;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #999;
-  padding: 5px;
-}
-
-.modal-close:hover {
-  color: #333;
-}
-
-.modal-content {
-  padding: 20px;
+  top: 70px;
+  right: 20px;
+  width: 450px;
+  max-height: 80vh;
   overflow-y: auto;
-  flex: 1;
-}
-
-/* Reviews in Modal */
-.reviews-summary {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.average-rating {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.rating-stars {
-  color: gold;
-  font-size: 1.5rem;
-  margin-right: 10px;
-  letter-spacing: 2px;
-}
-
-.reviews-list {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: 20px;
-  padding-right: 10px;
-}
-
-.review-item {
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-size: 0.9rem;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.reviewer-name {
-  font-weight: bold;
-  color: #333;
-}
-
-.review-rating {
-  color: gold;
-  font-size: 1.2rem;
-}
-
-.review-date {
-  color: #777;
-  font-size: 0.85rem;
-}
-
-.review-comment {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #555;
-}
-
-.no-reviews {
-  text-align: center;
-  color: #666;
-  padding: 30px;
-  background: #f8f8f8;
-  border-radius: 8px;
-}
-
-.add-review-form {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 20px;
-}
-
-.add-review-form h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #444;
-}
-
-.rating-stars-select {
-  display: flex;
-  gap: 5px;
-}
-
-.rating-stars-select .star {
-  font-size: 24px;
-  color: #ccc;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.rating-stars-select .star.filled {
-  color: gold;
-}
-
-textarea {
-  width: 100%;
-  padding: 12px;
+  background-color: white;
   border: 1px solid #ddd;
   border-radius: 8px;
-  min-height: 100px;
-  resize: vertical;
-  font-family: inherit;
-  font-size: 14px;
-  transition: border-color 0.2s;
-}
-
-textarea:focus {
-  outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-}
-
-.submit-review-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: background-color 0.2s;
-  display: block;
-  margin-left: auto;
-}
-
-.submit-review-button:hover {
-  background-color: #45a049;
-}
-
-.reviews-loading {
-  text-align: center;
-  padding: 40px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .modal {
-    width: 95%;
-    max-height: 85vh;
-  }
-  
-  .review-header {
-    flex-direction: column;
-  }
-}
-
-
-
-.modal {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  animation: modalAppear 0.3s ease-out;
-}
-
-@keyframes modalAppear {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.modal-header {
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: #333;
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #999;
-  padding: 5px;
-}
-
-.modal-close:hover {
-  color: #333;
-}
-
-.modal-content {
-  padding: 20px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-/* Reviews in Modal */
-.reviews-summary {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.average-rating {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.rating-stars {
-  color: gold;
-  font-size: 1.5rem;
-  margin-right: 10px;
-  letter-spacing: 2px;
-}
-
-.reviews-list {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: 20px;
-  padding-right: 10px;
-}
-
-.review-item {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
   padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transform: translateY(-20px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
 }
 
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-size: 0.9rem;
-  flex-wrap: wrap;
-  gap: 10px;
+.cart-dropdown.show {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
 }
 
-.reviewer-name {
-  font-weight: bold;
-  color: #333;
+/* Ensure product cards have proper spacing */
+.product-card-wrapper {
+  margin-top: 60px; /* Add space for cart button */
 }
 
-.review-rating {
-  color: gold;
-  font-size: 1.2rem;
-}
+/* ... rest of your CSS remains the same ... */
 
-.review-date {
-  color: #777;
-  font-size: 0.85rem;
-}
 
-.review-comment {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #555;
-}
-
-.no-reviews {
-  text-align: center;
-  color: #666;
-  padding: 30px;
-  background: #f8f8f8;
-  border-radius: 8px;
-}
-
-.add-review-form {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 20px;
-}
-
-.add-review-form h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #444;
-}
-
-.rating-stars-select {
-  display: flex;
-  gap: 5px;
-}
-
-.rating-stars-select .star {
-  font-size: 24px;
-  color: #ccc;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.rating-stars-select .star.filled {
-  color: gold;
-}
-
-textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  min-height: 100px;
-  resize: vertical;
-  font-family: inherit;
-  font-size: 14px;
-  transition: border-color 0.2s;
-}
-
-textarea:focus {
-  outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
-}
-
-.submit-review-button {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: background-color 0.2s;
-  display: block;
-  margin-left: auto;
-}
-
-.submit-review-button:hover {
-  background-color: #45a049;
-}
-
-.reviews-loading {
-  text-align: center;
-  padding: 40px;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .modal {
-    width: 95%;
-    max-height: 85vh;
-  }
-  
-  .review-header {
-    flex-direction: column;
-  }}

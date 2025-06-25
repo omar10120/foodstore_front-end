@@ -1,6 +1,6 @@
 .welcome-container {
     padding: 2rem;
-    min-height: 100vh;
+    min-height: 120vh;
     background-image: url('https://image.shutterstock.com/image-vector/online-transaction-payment-cashless-transfer-260nw-1640872069.jpg');
     background-size: cover;
     background-position: center;
@@ -159,5 +159,153 @@
     
     .welcome-glass-card {
         padding: 1.5rem 1rem;
+    }
+}
+
+/* Logo Animation Styles */
+.logo-animation-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-circle {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    animation: float 6s ease-in-out infinite;
+}
+
+.welcome-logo {
+    width: 140px;
+    height: auto;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+    transition: transform 0.5s ease;
+}
+
+.logo-circle:hover .welcome-logo {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.circle-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid rgba(106, 179, 138, 0.3);
+    animation: pulse 3s infinite;
+    z-index: 1;
+}
+
+.circle-pulse.delay-1 {
+    animation-delay: 1s;
+}
+
+.circle-pulse.delay-2 {
+    animation-delay: 2s;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Update existing styles for better integration */
+.welcome-containe   r {
+    /* background: linear-gradient(135deg, #6ab38a 0%, #3a7d5a 100%); */
+}
+
+.welcome-glass-card {
+    backdrop-filter: blur(16px) saturate(180%);
+    background: rgba(255, 255, 255, 0.85);
+    
+}
+
+.welcome-title {
+    margin-top: 20px;
+}
+
+.highlight {
+    color: #3a7d5a;
+    font-weight: 700;
+}
+
+.cta-button {
+    /* background: linear-gradient(to right, #3a7d5a, #6ab38a); */
+    transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(58, 125, 90, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .logo-animation-container {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .logo-circle {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .welcome-logo {
+        width: 110px;
+    }
+    
+    .welcome-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-animation-container {
+        width: 130px;
+        height: 130px;
+    }
+    
+    .logo-circle {
+        width: 110px;
+        height: 110px;
+    }
+    
+    .welcome-logo {
+        width: 85px;
+    }
+    
+    .welcome-title {
+        font-size: 1.8rem;
     }
 }

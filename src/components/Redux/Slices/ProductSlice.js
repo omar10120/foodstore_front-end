@@ -4,9 +4,15 @@ import axios from "axios";
 // Async thunk for fetching all products
 export const fetchGetAllProducts = createAsyncThunk(
     'productSlice/fetchGetAllProducts',
-    async () => {
-        const response = await axios.get('http://localhost:8080/api/products');
-        return response.data; // Assuming this returns an array of products
+    async (_, { getState }) => {
+        const { productsArray } = getState().productSlice;
+        
+        // Only fetch if we don't have products
+        if (productsArray.length === 0) {
+            const response = await axios.get('http://localhost:8080/api/products');
+            return response.data;
+        }
+        return productsArray;
     }
 );
 

@@ -10,7 +10,7 @@ const CartButton = ({ cartItems = [], toggleDropdown }) => {
       toggleDropdown();
     }}>
       <i className="cb-icon bi bi-basket-fill"></i>
-      {itemCount > 0 && <span className="cb-badge">{itemCount}</span>}
+      {itemCount > 0 && <span className="cb-badge" >{itemCount}</span>}
     </button>
   );
 };

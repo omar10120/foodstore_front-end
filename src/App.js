@@ -44,6 +44,7 @@ import Checkout from "./components/Checkout";
 import Subscribe from "./components/Seller/Subscribe";
 import DashboardAdmin from "./components/DashboardAdmin";
 import VerifyEmail from "./components/VerifyEmail";
+import Notifications from "./components/Notifications";
 
 function App() {
   const location = useLocation();
@@ -65,6 +66,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/subscribe" element={<Subscribe />} />
         <Route path="/VerifyEmail" element={<VerifyEmail />} />
+        <Route path="/Notifications" element={<Notifications />} />
         
         <Route
           path="/*"

@@ -21,13 +21,25 @@ function Welcome() {
 
     return (
         <main className="welcome-container">
-            <div className="welcome-glass-card ">
+            <div className="welcome-glass-card">
+                {/* Logo with modern animation */}
+                <div className="logo-animation-container">
+                    <div className="logo-circle">
+                        <img 
+                            src={`${process.env.PUBLIC_URL}/images/Naema Logo-04.png`} 
+                            alt="Naema Logo"
+                            className="welcome-logo"
+                        />
+                    </div>
+                    <div className="circle-pulse"></div>
+                    <div className="circle-pulse delay-1"></div>
+                    <div className="circle-pulse delay-2"></div>
+                </div>
                 
-                    <h1 className="welcome-title  ">
-                        Welcome to <span className="highlight">Naema نعمة</span>
-                        <div className="subtitle ">Together, we reduce waste and create blessings!</div>
-                    </h1>
-                
+                <h1 className="welcome-title">
+                    Welcome to <span className="highlight">نعمة</span>
+                    <div className="subtitle">Together, we reduce waste and create blessings!</div>
+                </h1>
                 
                 <div className="welcome-content">
                     <p className="welcome-text">

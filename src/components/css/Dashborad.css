@@ -4,7 +4,9 @@ Dashboard.css
     background-color: #f5f7fa;
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
   }
+ 
   
   .dashboard-header {
     display: flex;
@@ -126,7 +128,7 @@ Dashboard.css
   }
   
   /* Actions Container */
-  .actions-container {
+  .actions-container-dashboard {
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -218,17 +220,19 @@ Dashboard.css
     color: #4a6cf7;
   }
   
-  .table-container {
+  .table-container-dashboard {
     overflow-x: auto;
     padding: 20px;
   }
   
-  .products-table {
+  .products-table-dashboard {
     width: 100%;
     border-collapse: collapse;
+    
+    
   }
   
-  .products-table th {
+  .products-table-dashboard th {
     background-color: #f8fafc;
     text-align: left;
     padding: 12px 15px;
@@ -237,13 +241,15 @@ Dashboard.css
     border-bottom: 1px solid #e0e6ed;
   }
   
-  .products-table td {
-    padding: 15px;
+  .products-table-dashboard td {
+    /* padding: 15px; */
     border-bottom: 1px solid #e0e6ed;
     vertical-align: middle;
+    
+    
   }
   
-  .products-table tr:hover {
+  .products-table-dashboard tr:hover {
     background-color: #f8fafc;
   }
   
@@ -469,7 +475,7 @@ Dashboard.css
       grid-template-columns: 1fr;
     }
     
-    .products-table {
+    .products-table-dashboard {
       min-width: 700px;
     }
   }

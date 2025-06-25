@@ -29,7 +29,7 @@ CartButton.css
     top: -5px;
     right: -5px;
     background-color: var(--accent-red);
-    color: var(--white);
+    
     border-radius: 50%;
     width: 22px;
     height: 22px;
@@ -54,5 +54,6 @@ CartButton.css
       width: 20px;
       height: 20px;
       font-size: 0.7rem;
+      color: black;
     }
   }

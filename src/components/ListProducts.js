@@ -1,19 +1,21 @@
+// ListProducts.js
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import Products from "./Products";
-import Catogery from "./Catogery";
+import Category from "./Catogery";
 import { useSelector } from "react-redux";
 import axios from 'axios';
+
 function ListProducts() {
     const [productsArray, setProductsArray] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    
     const itemsPerPage = 9;
     const token = useSelector((state) => state.auth.token);
-    // Fetch all products from the backend
     const [subscriptionStatus, setSubscriptionStatus] = useState(false);
+
     useEffect(() => {
         const source = axios.CancelToken.source();
         let isMounted = true;
@@ -27,10 +29,9 @@ function ListProducts() {
                 cancelToken: source.token
               }
             );
-                if(response.status == "200")
+            if(response.status === 200) {
                 setSubscriptionStatus(response.data.subscriptionStatus);
-                
-
+            }
           } catch (err) {
             if (isMounted) {
               setError(axios.isCancel(err) 
@@ -38,8 +39,6 @@ function ListProducts() {
                 : err.response?.data || err.message
               );
             }
-          } finally {
-            // if (isMounted) setLoading(false);
           }
         };
     
@@ -47,7 +46,6 @@ function ListProducts() {
           fetchUserData();
         } else {
             setError("No authentication token found");
-    
         }
     
         return () => {
@@ -55,40 +53,50 @@ function ListProducts() {
           source.cancel("Component unmounted, canceling request");
         };
     }, [token]);
+
     useEffect(() => {
         const fetchProducts = async () => {
-            var baseurl ;
+            let baseurl;
             try {
-                if (subscriptionStatus)
-                     baseurl = "http://localhost:8080/api/products/nearby"
-                else
-                     baseurl = "http://localhost:8080/api/products"
-                const response = await fetch(baseurl,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+                // If category is selected, use category-specific endpoint
+                if (selectedCategory) {
+                    baseurl = `http://localhost:8080/api/products/category/${selectedCategory}`;
+                } 
+                // Otherwise, use normal products endpoint
+                else {
+                    if (subscriptionStatus) {
+                        baseurl = "http://localhost:8080/api/products/nearby";
+                    } else {
+                        baseurl = "http://localhost:8080/api/products";
+                    }
+                }
+                
+                const response = await fetch(baseurl, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                
                 if (!response.ok) {
                     throw new Error("Failed to fetch products");
                 }
                 
-                
                 const data = await response.json();
+                console.log(data);
                 setProductsArray(data);
-                if (data.length === 0) {
-                    throw new Error("no products found");
-                }
-                
                 setLoading(false);
-
                 
             } catch (err) {
-                
-                setError(err.message );
+                setError(err.message);
                 setLoading(false);
             }
         };
 
         fetchProducts();
-    }, []);
+    }, [subscriptionStatus, selectedCategory, token]);
+
+    const handleCategorySelect = (categoryId) => {
+        setSelectedCategory(categoryId);
+        setCurrentPage(1); // Reset to first page when category changes
+    };
 
     const totalProducts = productsArray.length || 0;
     const totalPages = Math.ceil(totalProducts / itemsPerPage);
@@ -107,28 +115,25 @@ function ListProducts() {
     };
 
     if (loading) return <div>Loading...</div>;
-    if (error) return <div>Error : {error} </div>;
+    if (error) return <div>Error: {error}</div>;
     
-    
-    
-
-
     return (
         <div className="container">
-            <div >
-                <Catogery />
+            <div>
+                <Category onCategorySelect={handleCategorySelect} />
             </div>
-            <div className="row">
-                {/* {currentProducts.map((product) => (
-                    <div style={{marginTop:'100px'}}>
-                    <Products key={product.id} product={product} />
+            
+            <div className="products-grid-container">
+                <div className="row">
+                {currentProducts.map((product) => (
+                    <div className="col-md-4 col-sm-6 mb-4" key={product.productId}>
+                    <Products product={product} />
                     </div>
-                ))} */}
-                <Products/>
-          
-             </div>
+                ))}
+                </div>
+            </div>
 
-            {/* <div className="pagination" style={{ marginLeft: "450px" }}>
+            <div className="pagination">
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
@@ -138,7 +143,6 @@ function ListProducts() {
 
                 {Array.from({ length: totalPages }, (_, index) => {
                     const pageNumber = index + 1;
-
                     return (
                         <button
                             key={pageNumber}
@@ -156,7 +160,7 @@ function ListProducts() {
                 >
                     Next
                 </button>
-            </div> */}
+            </div>
         </div>
     );
 }

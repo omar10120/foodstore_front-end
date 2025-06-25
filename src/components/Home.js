@@ -74,6 +74,21 @@ function Home() {
 
   return (
     <div className="home-container">
+           <section className="brand-showcase">
+              <div className="brand-content">
+                <div className="logo-container">
+                  <img 
+                    src={`${process.env.PUBLIC_URL}/images/Naema Logo-04.png`} 
+                    alt="Naema Logo" 
+                    className="brand-logo"
+                  />
+                </div>
+                <div className="brand-text">
+                  <h1 className="brand-title">نعمة</h1>
+                  <p className="brand-tagline">Redefining Quality and Savings</p>
+                </div>
+              </div>
+            </section>
       {/* Hero Carousel */}
       <div className="modern-carousel">
         {carouselItems.map((slide, index) => (
@@ -88,7 +103,7 @@ function Home() {
             <div className="carousel-content">
               <h2>{slide.label}</h2>
               <p>{slide.text}</p>
-              <button className="carousel-btn">Shop Now</button>
+              <button className="carousel-btn linkhref" ><a href="#products" >Shop Now</a></button>
             </div>
           </div>
         ))}
@@ -127,14 +142,14 @@ function Home() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <button className="search-btn">
-            <i className="search-icon">🔍</i>
+          <button className="search-btn-home">
+            <i className="search-icon-home" >🔍</i>
           </button>
         </div>
       </div>
       
       {/* Product List Section */}
-      <section className="products-section">
+      <section className="products-section" id="products">
         <div className="section-header">
           <h2 className="section-title">Featured Products</h2>
           <p className="section-subtitle">Browse our collection of quality goods</p>

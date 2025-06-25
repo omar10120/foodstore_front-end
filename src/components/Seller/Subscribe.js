@@ -2,6 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { FaArrowLeft, FaPaypal, FaCreditCard } from 'react-icons/fa';
+
 
 import "../css/Subscribe.css";
 
@@ -14,10 +16,14 @@ const Subscribe = () => {
   const navigate = useNavigate();
 
   const paymentMethods = [
-    { id: 'PAYPAL', name: 'PayPal', icon: 'paypal' },
-    { id: 'CREDIT_CARD', name: 'Credit Card', icon: 'credit_card' },
-    { id: 'BANK_TRANSFER', name: 'Bank Transfer', icon: 'account_balance' },
+    { id: 'PAYPAL', name: 'PayPal', icon: <FaPaypal /> },
+    { id: 'CREDIT_CARD', name: 'Credit Card', icon: <FaCreditCard /> },
+    { id: 'BANK_TRANSFER', name: 'Bank Transfer', icon: <FaCreditCard /> },
   ];
+
+  const handleGoBack = () => {
+    navigate(-1); // Go back to previous page
+  };
 
   const handleSubscribe = async () => {
     if (!paymentMethod) {
@@ -51,7 +57,11 @@ const Subscribe = () => {
 
   if (subscriptionData) {
     return (
-      <div className="subscription-success" >
+      <div className="subscription-success">
+        <button className="back-button" onClick={handleGoBack}>
+          <FaArrowLeft /> Back
+        </button>
+        
         <div className="success-card">
           <div className="success-icon">🎉</div>
           <h2>Subscription Successful!</h2>
@@ -92,6 +102,10 @@ const Subscribe = () => {
 
   return (
     <div className="subscribe-container">
+      <button className="back-button" onClick={handleGoBack}>
+        <FaArrowLeft /> Back
+      </button>
+      
       <div className="subscribe-card">
         <div className="card-header">
           <h1>Premium Subscription</h1>
@@ -100,10 +114,13 @@ const Subscribe = () => {
         
         <div className="pricing-section">
           <div className="price-display">
-            <span className="amount">$300</span>
+            <span className="amount">$100</span>
             <span className="period">/year</span>
           </div>
+          <div className="ribbon">Best Value</div>
+          
           <ul className="benefits-list">
+            <li>✅ Exclusive products nearby</li>
             <li>✅ Exclusive discounts on all products</li>
             <li>✅ Priority customer support</li>
             <li>✅ Early access to new features</li>
@@ -122,7 +139,7 @@ const Subscribe = () => {
                 className={`payment-option ${paymentMethod === method.id ? 'selected' : ''}`}
                 onClick={() => setPaymentMethod(method.id)}
               >
-                <span className="material-icons">{method.icon}</span>
+                <div className="payment-icon">{method.icon}</div>
                 <span>{method.name}</span>
               </div>
             ))}

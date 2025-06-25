@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import "./css/Dashboard.css";
+
 import "./css/Dashborad.css";
 import { useSelector } from "react-redux";
 import {
@@ -152,10 +152,10 @@ function Dashboard() {
       <div className="dashboard-header">
         <h1>Seller Dashboard</h1>
         <div className="header-actions">
-          <button type="button" className="btn-export">
+          {/* <button type="button" className="btn-export">
             <FiDollarSign />
             Export Report
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -224,7 +224,7 @@ function Dashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="actions-container">
+      <div className="actions-container-dashboard">
         <div className="actions-header">
           <h2>Quick Actions</h2>
         </div>
@@ -260,10 +260,10 @@ function Dashboard() {
         <div className="products-header">
           <h2>Your Products</h2>
         </div>
-        <div className="table-container">
-          <table className="products-table">
+        <div className="table-container-dashboard" >
+          <table className="products-table-dashboard">
             <thead>
-              <tr>
+              <tr >
                 <th>Product</th>
                 <th>Category</th>
                 <th>Price</th>

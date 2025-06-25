@@ -3,6 +3,7 @@
     border-radius: 8px;
     padding: 20px; /* Add padding for better spacing */
     margin-top: 35px;
+
 }
 
 .card-cart1 {
@@ -64,6 +65,10 @@
     font-size: 16px;
     cursor: pointer;
     width: 100px;
+}
+.btn-clear{
+    padding: 15px;
+    
 }
 
 .btn-buy:hover {

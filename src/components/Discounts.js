@@ -21,9 +21,9 @@ function Discounts() {
                         <h4 className="my-0 fw-normal">Discount No : 1</h4>
                     </div>
                     <div className="card-body" style={{ padding: '15px' }}>
-                        <h1 style={{ fontSize: '2.0rem', marginLeft: '20px' }}>Subscribe Now!</h1>
+                        <h1 style={{ fontSize: '2.0rem', marginLeft: '20px'}}>Subscribe Now!</h1>
                         <img
-                            style={{ width: '200px', height: '220px', marginLeft: '20px', marginTop: '-20px' }}
+                            style={{ width: '200px', height: '220px', marginLeft: '20px', marginTop: '20px' ,  marginBottom: '20px' }}
                             src={`${process.env.PUBLIC_URL}/images/OIP (10).jfif`}
                             alt="Discount Product" 
                         />
@@ -38,7 +38,7 @@ function Discounts() {
                             src={`${process.env.PUBLIC_URL}/images/R (1).png`}
                             alt="Discount Product" 
                         />
-                        <button type="button" onClick={() =>navigate("../subscribe")} className="w-100 btn btn-lg btn-primary"  style={{ padding: '10px' }}>
+                        <button type="button" onClick={() =>navigate("../subscribe")} className="w-100 btn btn-lg btn-primary"  style={{ padding: '10px' , marginTop:"10px"}}>
                         Subscribe
                         </button>
                     </div>

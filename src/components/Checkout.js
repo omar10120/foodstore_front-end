@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import './css/Checkout.css';
-
+import { useNavigate  } from 'react-router-dom';
 const Checkout = () => {
   const [cart, setCart] = useState(null);
   const [cartItems, setCartItems] = useState([]);
@@ -16,7 +16,10 @@ const Checkout = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [error, setError] = useState(null);
   const token = useSelector((state) => state.auth.token);
-
+  const navigate = useNavigate()
+  const goBack = () => {
+    navigate(-1); // Navigate to previous page
+  };
   // Fetch cart data
   useEffect(() => {
     const fetchCartData = async () => {
@@ -103,28 +106,42 @@ const Checkout = () => {
   if (isLoading) {
     return (
       <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Loading your cart...</p>
-      </div>
+
+      <button className="back-button-checkout"  onClick={goBack}>
+        &larr; Back
+      </button>
+      <div className="spinner"></div> 
+      <p>Loading your cart...</p>
+    </div>
     );
   }
 
   if (error && !cart) {
     return (
       <div className="error-container">
-        <div className="error-icon">⚠️</div>
-        <h3>Error Loading Cart</h3>
-        <p>{error}</p>
-        <button className="retry-button" onClick={() => window.location.reload()}>
-          Try Again
-        </button>
-      </div>
+
+      <button className="back-button-checkout" onClick={goBack}>
+        &larr; Back
+      </button>
+      <div className="error-icon">⚠️</div>
+      <h3>Error Loading Cart</h3>
+      <p>{error}</p>
+      <button className="retry-button" onClick={() => window.location.reload()}>
+        Try Again
+      </button>
+    </div>
     );
   }
 
   if (orderDetails) {
     return (
       <div className="confirmation-container">
+            <button className="back-button-checkout" onClick={goBack}>
+            &larr; Back
+          </button>
+        <div className="checkout-header">
+
+        </div>
         <div className="confirmation-card">
           <div className="confirmation-header">
             <div className="checkmark">✓</div>
@@ -172,6 +189,10 @@ const Checkout = () => {
   return (
     <div className="checkout-container">
       <div className="checkout-header">
+        
+        <button className="back-button-checkout" onClick={goBack}>
+          &larr; Back
+        </button>
         <h1>Checkout</h1>
         <p>Complete your purchase</p>
       </div>

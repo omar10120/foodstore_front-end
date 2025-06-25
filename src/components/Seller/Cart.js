@@ -164,7 +164,7 @@ function Cart() {
               className="card_price mb-3"
               style={{ marginTop: "10px", height: "300px" }}
             >
-              <div className="card-body" style={{ marginTop: "-10px" }}>
+              <div className="card-body" style={{ marginTop: "-10px",padding:"20px" }}>
                 <h3 style={{ color: "#480fe4" }}>Bills:</h3>
                 <p className="card-text">Price: {totalPrice} $</p>
                 <h3 style={{ marginLeft: "10px" }}>----------</h3>
@@ -184,7 +184,7 @@ function Cart() {
                   onClick={clearCart}
                   style={{
                     marginTop: "10px",
-                    backgroundColor: "#ff4d4d",
+                    backgroundColor: "#480fe4",
                     color: "white",
                   }}
                 >

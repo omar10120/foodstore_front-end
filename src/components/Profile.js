@@ -1,9 +1,8 @@
 // src/components/Profile.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import './css/profile.css';
 import { useSelector } from "react-redux";
-
 
 function Profile() {
   const [userData, setUserData] = useState(null);
@@ -12,6 +11,9 @@ function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState(null);
+  const [isFetchingAddress, setIsFetchingAddress] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [formData, setFormData] = useState({
     userName: "",
     email: "",
@@ -24,6 +26,95 @@ function Profile() {
   const [formErrors, setFormErrors] = useState({});
   
   const token = useSelector((state) => state.auth.token);
+  const debounceTimeout = useRef(null);
+
+  // Reverse geocoding function using OpenStreetMap
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+      );
+      
+      if (response.data && response.data.display_name) {
+        return response.data.display_name;
+      }
+      return "Address not found";
+    } catch (error) {
+      console.error("Reverse geocoding error:", error);
+      return "Could not retrieve address";
+    }
+  };
+
+  // Geolocation handler
+  const handleGeolocation = async () => {
+    if (navigator.geolocation) {
+      setIsFetchingAddress(true);
+      
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude.toString();
+          const lng = position.coords.longitude.toString();
+          
+          // Get human-readable address
+          const address = await reverseGeocode(lat, lng);
+          
+          setFormData(prev => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng,
+            address: address
+          }));
+          
+          setIsFetchingAddress(false);
+        },
+        (error) => {
+          setIsFetchingAddress(false);
+          setUpdateError("Failed to get location: " + error.message);
+        }
+      );
+    } else {
+      setUpdateError("Geolocation is not supported by your browser.");
+    }
+  };
+
+  // Fetch address suggestions
+  const fetchAddressSuggestions = async (query) => {
+    if (!query || query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1`
+      );
+      
+      if (response.data && Array.isArray(response.data)) {
+        setSuggestions(response.data.map(item => ({
+          display_name: item.display_name,
+          lat: item.lat,
+          lon: item.lon
+        })));
+      } else {
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching address suggestions:", error);
+      setSuggestions([]);
+    }
+  };
+
+  // Handle selecting a suggestion
+  const handleSelectSuggestion = (suggestion) => {
+    setFormData(prev => ({
+      ...prev,
+      address: suggestion.display_name,
+      latitude: suggestion.lat,
+      longitude: suggestion.lon
+    }));
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
 
   useEffect(() => {
     const source = axios.CancelToken.source();
@@ -46,8 +137,8 @@ function Profile() {
             email: response.data.email,
             phoneNumber: response.data.phoneNumber,
             address: response.data.location.address,
-            latitude: response.data.location.latitude,
-            longitude: response.data.location.longitude,
+            latitude: String(response.data.location.latitude),
+            longitude: String(response.data.location.longitude),
             password: ""
           });
         }
@@ -81,6 +172,7 @@ function Profile() {
     setUpdateSuccess(false);
     setUpdateError(null);
     setFormErrors({});
+    setSuggestions([]);
   };
 
   const handleCancelEdit = () => {
@@ -92,12 +184,12 @@ function Profile() {
         email: userData.email,
         phoneNumber: userData.phoneNumber,
         address: userData.location.address,
-        // Convert numbers to strings
         latitude: String(userData.location.latitude),
         longitude: String(userData.location.longitude),
         password: ""
       });
     }
+    setSuggestions([]);
   };
 
   const handleInputChange = (e) => {
@@ -113,6 +205,16 @@ function Profile() {
         ...prev,
         [name]: ""
       }));
+    }
+    
+    // Debounce address suggestions
+    if (name === "address") {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+      debounceTimeout.current = setTimeout(() => {
+        fetchAddressSuggestions(value);
+      }, 300);
     }
   };
 
@@ -156,7 +258,6 @@ function Profile() {
           phoneNumber: formData.phoneNumber,
           email: formData.email,
           password: formData.password || undefined,
-         
           latitude: parseFloat(formData.latitude),
           longitude: parseFloat(formData.longitude),
           address: formData.address
@@ -280,18 +381,45 @@ function Profile() {
             <div className="profile-field">
               <span className="field-label">Address:</span>
               {isEditing ? (
-                <>
+                <div className="address-input-container">
                   <input
                     className={`profile-input ${formErrors.address ? 'input-error' : ''}`}
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
+                    autoComplete="off"
+                    onFocus={() => setShowSuggestions(true)}
                   />
-                  {formErrors.address && <p className="error-message">{formErrors.address}</p>}
-                </>
+                  <button 
+                    type="button" 
+                    className="get-location-btn"
+                    onClick={handleGeolocation}
+                    disabled={isFetchingAddress}
+                  >
+                    {isFetchingAddress ? (
+                      <span className="location-spinner"></span>
+                    ) : (
+                      "📍 Get Location"
+                    )}
+                  </button>
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="suggestions-container">
+                      {suggestions.map((item, index) => (
+                        <div 
+                          key={index}
+                          className="suggestion-item"
+                          onClick={() => handleSelectSuggestion(item)}
+                        >
+                          {item.display_name}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <span className="field-value">{userData.location.address}</span>
               )}
+              {formErrors.address && <p className="error-message">{formErrors.address}</p>}
             </div>
             <div className="profile-field">
               <span className="field-label">Coordinates:</span>
@@ -395,7 +523,7 @@ function Profile() {
         
         {updateError && (
           <div className="update-error">
-            <p>⚠️ {updateError}</p>
+            <p>⚠️ {updateError} , try again...</p>
           </div>
         )}
       </div>

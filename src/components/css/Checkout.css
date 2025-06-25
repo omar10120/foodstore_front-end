@@ -368,8 +368,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 80vh;
+    min-height: 100vh;
     padding: 20px;
+    padding-top: 50px;
+    padding-bottom: 50px;
   }
   
   .confirmation-card {
@@ -565,3 +567,44 @@
       margin-right: 15px;
     }
   }
+
+  /* Back button styling */
+.back-button-checkout {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background: var(--primary);
+  color: #fff;
+  
+
+}
+
+.back-button-checkout:hover {
+  
+  opacity: .8;
+  
+}
+
+/* Adjust header position for back button */
+.checkout-header {
+  position: relative;
+  text-align: center;
+  padding-top: 15px;
+}
+
+/* Loading/error container adjustments */
+.loading-container,
+.error-container {
+  position: relative;
+  padding-top: 50px;
+}

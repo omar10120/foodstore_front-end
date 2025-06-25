@@ -37,7 +37,7 @@
     padding: 3rem 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     position: relative;
-    z-index: 100;
+    z-index: 40;
     margin-top: auto; /* للثبات في أسفل الصفحة */
   }
   
@@ -68,6 +68,7 @@
     opacity: 0.9;
     font-weight: 400;
     letter-spacing: 0.5px;
+    
   }
   
   /* قائمة الروابط */

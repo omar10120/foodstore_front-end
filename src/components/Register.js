@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./css/Register.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,14 @@ function Register() {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState("");
   const [activeRole, setActiveRole] = useState(null);
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeTooltip, setActiveTooltip] = useState(null);
+  const [isFetchingAddress, setIsFetchingAddress] = useState(false);
+  const [iscreating , setiscreating] = useState(false);
   const navigate = useNavigate();
+  const debounceTimeout = useRef(null);
   
   const [register, setRegister] = useState({
     name: "",
@@ -21,9 +28,70 @@ function Register() {
     address: "",
   });
 
-  const handleShowToast = (message, type) => {
-
+  // Calculate password strength
+  useEffect(() => {
+    const calculatePasswordStrength = () => {
+      let strength = 0;
+      const { password } = register;
+      
+      if (password.length >= 8) strength += 1;
+      if (/[A-Z]/.test(password)) strength += 1;
+      if (/[a-z]/.test(password)) strength += 1;
+      if (/[0-9]/.test(password)) strength += 1;
+      if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+      
+      setPasswordStrength(strength);
+    };
     
+    calculatePasswordStrength();
+  }, [register.password]);
+
+  // Fetch address suggestions
+  const fetchAddressSuggestions = async (query) => {
+    if (!query || query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    
+    try {
+      // Use OpenStreetMap Nominatim API for address suggestions
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1`
+      );
+      
+      if (response.data && Array.isArray(response.data)) {
+        setSuggestions(response.data.map(item => ({
+          display_name: item.display_name,
+          lat: item.lat,
+          lon: item.lon
+        })));
+      } else {
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching address suggestions:", error);
+      setSuggestions([]);
+    }
+  };
+
+  // Reverse geocoding to get address from coordinates
+  const reverseGeocode = async (latitude, longitude) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`
+      );
+      
+      if (response.data && response.data.display_name) {
+        return response.data.display_name;
+      }
+      return "Address not found";
+    } catch (error) {
+      console.error("Reverse geocoding failed:", error);
+      return "Could not retrieve address";
+    }
+  };
+
+  const handleShowToast = (message, type) => {
     setToastMessage(message);
     setToastType(type);
     setShowToast(true);
@@ -36,7 +104,7 @@ function Register() {
   };
 
   const submit = async (e) => {
-    
+    setiscreating(true)
     e.preventDefault();
     try {
       const response = await axios.post(
@@ -62,12 +130,67 @@ function Register() {
         error.response?.data || "Registration failed. Please try again.",
         "error"
       );
+    }finally{
+      setiscreating(false)
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRegister(prev => ({ ...prev, [name]: value }));
+    
+    // Debounce address suggestions
+    if (name === "address") {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+      debounceTimeout.current = setTimeout(() => {
+        fetchAddressSuggestions(value);
+      }, 300);
+    }
+  };
+
+  const handleGeolocation = async () => {
+    if (navigator.geolocation) {
+      setIsFetchingAddress(true);
+      handleShowToast("Getting your location...", "info");
+      
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude.toString();
+          const lng = position.coords.longitude.toString();
+          
+          // Get human-readable address
+          const address = await reverseGeocode(lat, lng);
+          
+          setRegister(prev => ({
+            ...prev,
+            latitude: lat,
+            longitude: lng,
+            address: address
+          }));
+          
+          setIsFetchingAddress(false);
+          handleShowToast("Location retrieved successfully!", "success");
+        },
+        (error) => {
+          setIsFetchingAddress(false);
+          handleShowToast("Failed to get location: " + error.message, "error");
+        }
+      );
+    } else {
+      handleShowToast("Geolocation is not supported by your browser.", "error");
+    }
+  };
+
+  const handleSelectSuggestion = (suggestion) => {
+    setRegister(prev => ({
+      ...prev,
+      address: suggestion.display_name,
+      latitude: suggestion.lat,
+      longitude: suggestion.lon
+    }));
+    setSuggestions([]);
   };
 
   return (
@@ -82,7 +205,7 @@ function Register() {
             </div>
             
             <form onSubmit={submit} className="register-form">
-            <div className="form-row">
+              <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="name">Full Name</label>
                   <input
@@ -123,6 +246,21 @@ function Register() {
                     placeholder="Create a password"
                     required
                   />
+                  <div className="password-strength">
+                    <div className="strength-meter">
+                      <div 
+                        className="strength-meter-fill" 
+                        data-strength={passwordStrength}
+                      ></div>
+                    </div>
+                    <div className="strength-label">
+                      {passwordStrength === 0 && "Very Weak"}
+                      {passwordStrength === 1 && "Weak"}
+                      {passwordStrength === 2 && "Medium"}
+                      {passwordStrength === 3 && "Strong"}
+                      {passwordStrength >= 4 && "Very Strong"}
+                    </div>
+                  </div>
                 </div>
               </div>
               
@@ -150,9 +288,24 @@ function Register() {
                     name="address"
                     value={register.address}
                     onChange={handleChange}
-                    placeholder="Enter your address"
+                    placeholder="Start typing your address"
                     required
+                    autoComplete="off"
+                    onFocus={() => setShowSuggestions(true)}
                   />
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="suggestions-container">
+                      {suggestions.map((item, index) => (
+                        <div 
+                          key={index}
+                          className="suggestion-item"
+                          onClick={() => handleSelectSuggestion(item)}
+                        >
+                          {item.display_name}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -184,34 +337,81 @@ function Register() {
                     required
                   />
                 </div>
+                
+                <div className="form-group geolocation-group">
+                  <label>&nbsp;</label>
+                  <button 
+                    type="button" 
+                    className="geolocation-btn"
+                    onClick={handleGeolocation}
+                    disabled={isFetchingAddress}
+                  >
+                    {isFetchingAddress ? (
+                      <>
+                        <i className="bi bi-arrow-repeat spin"></i> Locating...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-geo-alt"></i> Get My Location
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
               
               <div className="form-row role-selection">
                 <p className="role-label">Select Your Role:</p>
                 <div className="role-buttons">
-                  <button
-                    type="button"
-                    className={`role-btn ${activeRole === 3 ? 'active' : ''}`}
-                    onClick={() => selectRole(3)}
-                  >
-                    <i className="bi bi-cash-coin"></i>
-                    <span>Seller</span>
-                  </button>
+                  <div className="role-btn-container">
+                    <button
+                      type="button"
+                      className={`role-btn ${activeRole === 3 ? 'active' : ''}`}
+                      onClick={() => selectRole(3)}
+                      onMouseEnter={() => setActiveTooltip(3)}
+                      onMouseLeave={() => setActiveTooltip(null)}
+                    >
+                      <i className="bi bi-cash-coin"></i>
+                      <span>Seller</span>
+                    </button>
+                    {activeTooltip === 3 && (
+                      <div className="tooltip">
+                        As a seller, you can list products and manage your own store
+                      </div>
+                    )}
+                  </div>
                   
-                  <button
-                    type="button"
-                    className={`role-btn ${activeRole === 1 ? 'active' : ''}`}
-                    onClick={() => selectRole(1)}
-                  >
-                    <i className="bi bi-cart4"></i>
-                    <span>Buyer</span>
-                  </button>
+                  <div className="role-btn-container">
+                    <button
+                      type="button"
+                      className={`role-btn ${activeRole === 1 ? 'active' : ''}`}
+                      onClick={() => selectRole(1)}
+                      onMouseEnter={() => setActiveTooltip(1)}
+                      onMouseLeave={() => setActiveTooltip(null)}
+                    >
+                      <i className="bi bi-cart4"></i>
+                      <span>Buyer</span>
+                    </button>
+                    {activeTooltip === 1 && (
+                      <div className="tooltip">
+                        As a buyer, you can browse and purchase products from sellers
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               
               <div className="form-row submit-row">
-                <button type="submit" className="submit-btn">
-                  Create Account
+                <button type="submit" className="submit-btn" disabled={iscreating} >
+                 
+                  {iscreating ? (
+                      <>
+                        <i className="bi bi-arrow-repeat spin"></i> Creating...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-geo-alt"></i>  Create Account
+                      </>
+                    )}
                 </button>
               </div>
             </form>
@@ -245,8 +445,12 @@ function Register() {
             <div className="toast-icon">
               {toastType === "success" ? (
                 <i className="bi bi-check-circle-fill"></i>
-              ) : (
+              ) : toastType === "error" ? (
                 <i className="bi bi-exclamation-circle-fill"></i>
+              ) : toastType === "info" ? (
+                <i className="bi bi-info-circle-fill"></i>
+              ) : (
+                <i className="bi bi-exclamation-triangle-fill"></i>
               )}
             </div>
             <div className="toast-message">
